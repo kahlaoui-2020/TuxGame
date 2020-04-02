@@ -46,7 +46,7 @@ public abstract class Jeu {
         env.addObject(tux);
 
         // Ici, on peut initialiser des valeurs pour une nouvelle partie
-        demarrePartie(partie);
+        //demarrePartie(partie);
         // Boucle de jeu
         boolean finished = false;
         while (!finished) {
@@ -62,7 +62,7 @@ public abstract class Jeu {
             // ... (sera complété plus tard) ...
  
             // Ici, on applique les regles
-            appliqueRegles(partie);
+           // appliqueRegles(partie);
  
             // Fait avancer le moteur de jeu (mise à jour de l'affichage, de l'écoute des événements clavier...)
             env.advanceOneFrame();
