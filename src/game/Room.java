@@ -26,9 +26,9 @@ public class Room {
         this.textureNorth = "textures/floor/clover1.png" ;
         this.textureEast = "textures/floor/clover1.png" ;
         this.textureWest = "textures/floor/clover1.png" ;
-        this.depth = 100 ;
+        this.depth = 110 ;
         this.width = 100 ;
-        this.height = 60 ;
+        this.height = 70 ;
     } 
 
     public int getDepth() {

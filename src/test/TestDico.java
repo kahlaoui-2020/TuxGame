@@ -19,7 +19,7 @@ public class TestDico {
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
      
-        Dico dico = new Dico("") ;
+        Dico dico = new Dico("src/test/dico.xml") ;
         /*for(int i = 0; i<5; i++) {
             
             Scanner sc = new Scanner(System.in);
@@ -30,7 +30,7 @@ public class TestDico {
             dico.ajouteMotDico(niveau, mot);
 
         }*/
-        dico.lireDictionnaireDOM("src/test/","dico.xml");
+        // dico.lireDictionnaireDOM("src/test/","dico.xml");
         /*System.out.println("Mot niveau 1 : ") ;
         for(String mot : dico.getList1()) {
             System.out.println(mot) ;

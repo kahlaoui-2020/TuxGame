@@ -29,7 +29,7 @@ public class Dico {
     
     private String cheminFichierDico ;
 
-    public Dico(String filePath) {
+    public Dico(String filePath) throws ParserConfigurationException, SAXException, IOException {
         
         this.listeNiveau1 = new ArrayList<String>();
         this.listeNiveau2 = new ArrayList<String>();
@@ -38,6 +38,8 @@ public class Dico {
         this.listeNiveau5 = new ArrayList<String>();
             
         this.cheminFichierDico = filePath ;
+        lireDictionnaireDOM(cheminFichierDico) ;
+        
     }
     
      public String getMotDepuisListeNiveaux(int niveau){
@@ -84,10 +86,10 @@ public class Dico {
         
     }
     
-    public void lireDictionnaireDOM(String cheminFichierDico, String filename) throws ParserConfigurationException, SAXException, IOException {
+    public void lireDictionnaireDOM(String filePath) throws ParserConfigurationException, SAXException, IOException {
         
         DOMParser parser = new DOMParser() ;
-        parser.parse(cheminFichierDico+filename) ;
+        parser.parse(filePath) ;
         Document doc = parser.getDocument() ;
         NodeList dico = doc.getElementsByTagName("mot");
         for(int i=0; i<dico.getLength(); i++) {
@@ -99,6 +101,7 @@ public class Dico {
         }
  
     }
+   
     public ArrayList<String> getList1() {
         return listeNiveau1 ;
     }

@@ -5,6 +5,10 @@
  */
 package game;
 
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+
 /**
  *
  * @author kahlaoui
@@ -14,12 +18,12 @@ public class JeuDevineLeMotOrdre extends Jeu{
     private int nbLettresRestantes ;
     private Chronometre chrono ;
 
-    public JeuDevineLeMotOrdre() {
+    public JeuDevineLeMotOrdre() throws ParserConfigurationException, SAXException, IOException {
         super() ;
     }
     protected boolean TuxTrouveLettre() {
         if(collision(getListLetters().get(0))) {
-            getListLetters().remove(0) ;
+            getListLetters().remove(0) ; /* A verifie */
             return true ;
         }
         else return false ;
