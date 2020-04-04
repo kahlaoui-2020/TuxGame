@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
+import static jdk.nashorn.internal.runtime.JSType.isNumber;
 import org.lwjgl.input.Keyboard;
 import org.xml.sax.SAXException;
 
@@ -20,13 +21,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class Jeu {
 
-    private int getNiveau() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private String getDate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
     
     // Une énumération pour définir les choix de l'utilisateur
     @SuppressWarnings("PackageVisibleInnerClass")
@@ -36,6 +31,7 @@ enum MENU_VAL {
     // attributs de classe
     private final Room menuRoom;
     EnvText textNomJoueur;
+    EnvText textNiveauJeu ;
     EnvText textMenuQuestion;
     EnvText textMenuJeu1;
     EnvText textMenuJeu2;
@@ -157,6 +153,7 @@ enum MENU_VAL {
      */
     private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException {
 
+       
         MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
         String nomJoueur;
 
@@ -170,12 +167,13 @@ enum MENU_VAL {
         textMenuPrincipal3.display();
 
         // vérifie qu'une touche 1, 2 ou 3 est pressée
-        int touche = 0;
-        while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3)) {
-            touche = env.getKey();
+        
+        int key = 0 ;
+        
+        while (!(key == Keyboard.KEY_1 || key == Keyboard.KEY_2 || key == Keyboard.KEY_3)) {
+            key = env.getKey();
             env.advanceOneFrame();
         }
-
         // efface le menu
         textMenuQuestion.clean();
         textMenuPrincipal1.clean();
@@ -183,7 +181,8 @@ enum MENU_VAL {
         textMenuPrincipal3.clean();
 
         // et décide quoi faire en fonction de la touche pressée
-        switch (touche) {
+        
+        switch (key) {
             // -------------------------------------
             // Touche 1 : Charger un profil existant
             // -------------------------------------
@@ -243,9 +242,9 @@ enum MENU_VAL {
             textMenuJeu4.display();
 
             // vérifie qu'une touche 1, 2, 3 ou 4 est pressée
-            int touche = 0;
-            while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3 || touche == Keyboard.KEY_4)) {
-                touche = env.getKey();
+            int key = env.getKey();
+            while (!(key == Keyboard.KEY_1 || key == Keyboard.KEY_2 || key == Keyboard.KEY_3  || key == Keyboard.KEY_4)) {
+                key = env.getKey();
                 env.advanceOneFrame();
             }
 
@@ -260,7 +259,7 @@ enum MENU_VAL {
             env.setRoom(mainRoom);
 
             // et décide quoi faire en fonction de la touche pressée
-            switch (touche) {
+            switch (key) {
                 // -----------------------------------------
                 // Touche 1 : Commencer une nouvelle partie
                 // -----------------------------------------                
@@ -354,7 +353,7 @@ enum MENU_VAL {
  
         // Ici on peut calculer des valeurs lorsque la partie est terminée
         terminePartie(partie);
-                 System.out.println("1111111111");
+                 
 
     }
     protected abstract void demarrePartie(Partie partie);
@@ -364,12 +363,44 @@ enum MENU_VAL {
         return Math.sqrt(Math.pow(tux.getX()-letter.getX(), 2)+Math.pow(tux.getY()-letter.getY(), 2)+Math.pow(tux.getZ()-letter.getZ(), 2));
     }
     protected boolean collision(Letter letter) {
-        return (distance(letter) < 1.0) ;
+        return (distance(letter) < 2.0) ;
         
     }
     public ArrayList<Letter> getListLetters() {
         return lettres ;
     
+    }
+    private int getNiveau() {
+        textNiveauJeu.modify("Choisissez le niveau de difficulté (1-5) : ");
+        int niveau = 0;
+        int key = 0;
+        while(niveau > 5 && niveau < 1 && key !=Keyboard.KEY_RETURN) {
+            key =  env.getKey();
+            if(isNumber(key)) niveau = key ;
+            env.advanceOneFrame();
+        
+        }
+        
+        return niveau ;
+    }
+
+    private String getDate() {
+        textNomJoueur.modify("Choisissez une date de partie : "); 
+        int key = 0 ;
+        String date = null ;
+        while(!(date.length()>0 && key == Keyboard.KEY_RETURN)) {
+            key = 0 ;
+            while(!isNumber(key) && key != Keyboard.KEY_BACKSLASH && key != Keyboard.KEY_RETURN) {
+                key = env.getKey() ;
+                env.advanceOneFrame();
+            }
+            if(key != Keyboard.KEY_RETURN) {
+                date += getLetter(key) ; 
+            }
+    
+    
+        }
+        return date;
     }
     
     

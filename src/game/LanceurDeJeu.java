@@ -5,13 +5,17 @@
  */
 package game;
 
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+
 /**
  *
  * @author kahlaoui
  */
 public class LanceurDeJeu {
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
     
     Jeu jeu ;
     jeu = new JeuDevineLeMotOrdre() ;
