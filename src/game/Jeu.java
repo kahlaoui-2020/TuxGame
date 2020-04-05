@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class Jeu {
 
-    
+    ///666
     
     // Une énumération pour définir les choix de l'utilisateur
     @SuppressWarnings("PackageVisibleInnerClass")
