@@ -21,15 +21,37 @@ public class JeuDevineLeMotOrdre extends Jeu{
     public JeuDevineLeMotOrdre() throws ParserConfigurationException, SAXException, IOException {
         super() ;
     }
-    protected boolean TuxTrouveLettre() {
-        if(collision(getListLetters().get(0))) {
-            getListLetters().remove(0) ; /* A verifie */
+    private boolean TuxTrouveLettre() {
+        /*if(collision(getListLetters().get(0))) {
+            getListLetters().remove(0) ;  A verifie 
             return true ;
         }
-        else return false ;
+        else */
+        return false ;
     }
+    /*
+    private boolean tuxTrouveLettre() {
+        boolean found = false;
+        int lengthMot = partie.getMot().length() ;
+        int index = lengthMot - nbLettresRestantes;
+        
+    
+        
+        
+        
+        if(collision(letter))
+        {
+            found = true;
+            env.removeObject(lettres.get(index));
+        }
+        return found ;
+        
+    }
+    
+    
+    
+    */
 
-    @Override
     protected void demarrePartie(Partie partie) {
         nbLettresRestantes = partie.getMot().length() ;
         chrono = new Chronometre(60) ;
@@ -50,6 +72,20 @@ public class JeuDevineLeMotOrdre extends Jeu{
         partie.setTemps((int) chrono.getTime());
         partie.setTrouve(nbLettresRestantes);
     }
+
+    private Object getListLetters() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    private int getNbLettresRestantes() {
+        return nbLettresRestantes ;
+    
+    
+    }
+    private int getTemps() {
+        return 0 ;
+    
+    }
+    
 
    
     

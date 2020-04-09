@@ -5,6 +5,8 @@
  */
 package game;
 
+import static game.Profil.xmlDateToProfileDate;
+import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -26,7 +28,7 @@ public class Partie {
         this.niveau = niveau ;
     }
     public Partie(Element partieElt) {
-        this.date = partieElt.getAttribute("date") ;
+        this.date = xmlDateToProfileDate(partieElt.getAttribute("date")) ;
         this.temps = Double.parseDouble(partieElt.getFirstChild().getNodeValue()) ;
         this.niveau = Integer.parseInt(((Element)(partieElt.getLastChild())).getAttribute("niveau")) ;
         this.mot = partieElt.getLastChild().getNodeValue() ;
@@ -34,13 +36,23 @@ public class Partie {
     
     }
     public Element getPartie(Document doc) {
-        return null;
+        Element parties = doc.createElement("parties");
+        Element partie = doc.createElement("partie");
+        partie.setAttribute("date", this.date);
+        Element temps = doc.createElement("temps");
+        Element mot = doc.createElement("mot");
+        mot.setAttribute("niveau", Integer.toString(this.niveau));
+        mot.setTextContent(this.mot);
+        if(this.temps != 0) partie.appendChild(temps) ;
+        partie.appendChild(mot);
+        parties.appendChild(partie);
+        return parties;
  
     }
     public void setTrouve(int nbLettresRestantes) {
       this.trouve = (int) (((mot.length()-nbLettresRestantes)*100)/mot.length()) ;
     }
-    public void setTemps(int temps) {
+    public void setTemps(double temps) {
         this.temps = temps ;
     }
     public int getNiveau() {
@@ -53,5 +65,11 @@ public class Partie {
     public String getMot() {
         return this.mot ;
     }
+
+    public String getDate() {
+        return date ;
+    }
+
+    
     
 }

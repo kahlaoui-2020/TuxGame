@@ -6,6 +6,7 @@
 package test;
 
 import game.Dico;
+import game.Profil;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,7 +20,12 @@ public class TestDico {
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
      
-        Dico dico = new Dico("src/test/dico.xml") ;
+        Dico dico = new Dico("src/xmlFile/dico.xml") ;
+        int niveau = 3 ;
+        String mot = dico.getMotDepuisListeNiveaux(niveau) ;
+        System.out.println(mot);
+        Profil profil = new Profil("Sami","00-00-0000") ;
+        System.out.println("Done");
         /*for(int i = 0; i<5; i++) {
             
             Scanner sc = new Scanner(System.in);

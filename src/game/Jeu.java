@@ -4,11 +4,12 @@
  * and open the template in the editor.
  */
 package game;
+
 import env3d.Env;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Random;
 import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 import static jdk.nashorn.internal.runtime.JSType.isNumber;
@@ -17,22 +18,24 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author kahlaoui
+ * @author gladen
  */
 public abstract class Jeu {
 
     
-    
-    // Une énumération pour définir les choix de l'utilisateur
-    @SuppressWarnings("PackageVisibleInnerClass")
-enum MENU_VAL {
+
+    enum MENU_VAL {
         MENU_SORTIE, MENU_CONTINUE, MENU_JOUE
     }
-    // attributs de classe
+    
+    private final Room mainRoom;
     private final Room menuRoom;
+    //text (affichage des texte du jeu)
     EnvText textNomJoueur;
     EnvText textNiveauJeu ;
+    EnvText textDateJeu;
     EnvText textMenuQuestion;
+    protected EnvTextMap menuText;  
     EnvText textMenuJeu1;
     EnvText textMenuJeu2;
     EnvText textMenuJeu3;
@@ -40,50 +43,73 @@ enum MENU_VAL {
     EnvText textMenuPrincipal1;
     EnvText textMenuPrincipal2;
     EnvText textMenuPrincipal3;
-    // ... attributs existants ...
-    private Env env ;
-    private Room mainRoom ;
-    private Profil profil ;
-    private Tux tux ;
+    
+    private final Env env;
+    private Tux tux;
+    
     private  ArrayList<Letter> lettres ;
-    Dico dico ;
+    private Profil profil;
+    private  Dico dico;
+                           
+    
     
     
     public Jeu() throws ParserConfigurationException, SAXException, IOException {
-        env = new Env() ;
-        mainRoom = new Room() ;
-        menuRoom = new Room() ;
+
+        // Crée un nouvel environnement
+        env = new Env();
+
+        // Instancie une Room
+        mainRoom = new Room();
+
+        // Instancie une autre Room pour les menus
+        menuRoom = new Room();
         menuRoom.setTextureEast("textures/black.png");
         menuRoom.setTextureWest("textures/black.png");
         menuRoom.setTextureNorth("textures/black.png");
         menuRoom.setTextureBottom("textures/black.png");
-        env.setCameraXYZ(50, 60,175) ;
-        env.setCameraPitch(-20) ;
-        env.setDefaultControl(false) ;
-        profil = new Profil() ;
-        lettres = new ArrayList<Letter>() ;
+
+        // Règle la camera
+        env.setCameraXYZ(50, 60, 175);
+        env.setCameraPitch(-20);
+
+        // Désactive les contrôles par défaut
+        env.setDefaultControl(false);
+
+        // instancie le menuText
+        menuText = new EnvTextMap(env);
+        
         // Textes affichés à l'écran
-        textMenuQuestion = new EnvText(env, "Voulez vous ?", 200, 300);
-        textMenuJeu1 = new EnvText(env, "1. Commencer une nouvelle partie ?", 250, 280);
-        textMenuJeu2 = new EnvText(env, "2. Charger une partie existante ?", 250, 260);
-        textMenuJeu3 = new EnvText(env, "3. Sortir de ce jeu ?", 250, 240);
-        textMenuJeu4 = new EnvText(env, "4. Quitter le jeu ?", 250, 220);
-        textNomJoueur = new EnvText(env, "Choisissez un nom de joueur : ", 200, 300);
-        textMenuPrincipal1 = new EnvText(env, "1. Charger un profil de joueur existant ?", 250, 280);
-        textMenuPrincipal2 = new EnvText(env, "2. Créer un nouveau joueur ?", 250, 260);
-        textMenuPrincipal3 = new EnvText(env, "3. Sortir du jeu ?", 250, 240);
+        menuText.addText("Voulez vous ?", "Question", 200, 300);
+        menuText.addText("1. Commencer une nouvelle partie ?", "Jeu1", 250, 280);
+        menuText.addText("2. Charger une partie existante ?", "Jeu2", 250, 260);
+        menuText.addText("3. Sortir de ce jeu ?", "Jeu3", 250, 240);
+        menuText.addText("4. Quitter le jeu ?", "Jeu4", 250, 220);
+        menuText.addText("Choisissez un nom de joueur : ", "NomJoueur", 200, 300);
+        menuText.addText("Choisissez le niveau de difficulté (1-5) : ", "NiveauJeu", 200, 300);
+        menuText.addText("Choisissez un date: ", "DateJeu", 200, 300);
+        menuText.addText("1. Charger un profil de joueur existant ?", "Principal1", 250, 280);
+        menuText.addText("2. Créer un nouveau joueur ?", "Principal2", 250, 260);
+        menuText.addText("3. Sortir du jeu ?", "Principal3", 250, 240);
     }
+
+    /**
+     * Gère le menu principal
+     *
+     */
     public void execute() throws ParserConfigurationException, SAXException, IOException {
-        MENU_VAL mainLoop; 
+
+        MENU_VAL mainLoop;
         mainLoop = MENU_VAL.MENU_SORTIE;
         do {
             mainLoop = menuPrincipal();
         } while (mainLoop != MENU_VAL.MENU_SORTIE);
         this.env.setDisplayStr("Au revoir !", 300, 30);
-        // Détruit l'environnement et provoque la sortie du programme 
         env.exit();
     }
-    /**
+
+    
+        /**
      * Teste si une code clavier correspond bien à une lettre
      *
      * @return true si le code est une lettre
@@ -119,191 +145,96 @@ enum MENU_VAL {
         }
         return letterStr.toLowerCase();
     }
-    /**
-     * Permet de saisir le nom d'un joueur et de l'affiche à l'écran durant la saisie
-     *
-     * @return le nom du joueur au format String
-     */
+    // fourni
     private String getNomJoueur() {
-        textNomJoueur.modify("Choisissez un nom de joueur : ");
-        int touche = 0;
         String nomJoueur = "";
-        while (!(nomJoueur.length() > 0 && touche == Keyboard.KEY_RETURN)) {
-            touche = 0;
-            while (!isLetter(touche) && touche != Keyboard.KEY_MINUS && touche != Keyboard.KEY_SUBTRACT && touche != Keyboard.KEY_RETURN) {
-                touche = env.getKey();
-                env.advanceOneFrame();
-            }
-            if (touche != Keyboard.KEY_RETURN) {
-                if ((touche == Keyboard.KEY_SUBTRACT || touche == Keyboard.KEY_MINUS) && nomJoueur.length() > 0) {
-                    nomJoueur += "-";
-                } else {
-                    nomJoueur += getLetter(touche);
-                }
-                textNomJoueur.modify("Choisissez un nom de joueur : " + nomJoueur);
-            }
-        }
-        textNomJoueur.clean();
+        menuText.getText("NomJoueur").display();
+        nomJoueur = menuText.getText("NomJoueur").lire(true);
+        menuText.getText("NomJoueur").clean();
         return nomJoueur;
     }
-    /**
-     * Menu principal
-     *
-     * @return le choix du joueur
-     */
-    private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException {
 
-       
-        MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
-        String nomJoueur;
-
-        // restaure la room du menu
-        env.setRoom(menuRoom);
-
-        // affiche le menu principal
-        textMenuQuestion.display();
-        textMenuPrincipal1.display();
-        textMenuPrincipal2.display();
-        textMenuPrincipal3.display();
-
-        // vérifie qu'une touche 1, 2 ou 3 est pressée
-        
-        int key = 0 ;
-        
-        while (!(key == Keyboard.KEY_1 || key == Keyboard.KEY_2 || key == Keyboard.KEY_3)) {
-            key = env.getKey();
-            env.advanceOneFrame();
-        }
-        // efface le menu
-        textMenuQuestion.clean();
-        textMenuPrincipal1.clean();
-        textMenuPrincipal2.clean();
-        textMenuPrincipal3.clean();
-
-        // et décide quoi faire en fonction de la touche pressée
-        
-        switch (key) {
-            // -------------------------------------
-            // Touche 1 : Charger un profil existant
-            // -------------------------------------
-            case Keyboard.KEY_1:
-                // demande le nom du joueur existant
-                nomJoueur = getNomJoueur();
-                // charge le profil de ce joueur si possible
-                if (profil.charge(nomJoueur)) {
-                    // lance le menu de jeu et récupère le choix à la sortie de ce menu de jeu
-                    choix = menuJeu();
-                } else {
-                    // sinon continue (et boucle dans ce menu)
-                    choix = MENU_VAL.MENU_CONTINUE;
-                }
-                break;
-
-            // -------------------------------------
-            // Touche 2 : Créer un nouveau joueur
-            // -------------------------------------
-            case Keyboard.KEY_2:
-                // demande le nom du nouveau joueur
-                nomJoueur = getNomJoueur();
-                // crée un profil avec le nom d'un nouveau joueur
-                profil = new Profil(nomJoueur);
-                // lance le menu de jeu et récupère le choix à la sortie de ce menu de jeu
-                choix = menuJeu();
-                break;
-
-            // -------------------------------------
-            // Touche 3 : Sortir du jeu
-            // -------------------------------------
-            case Keyboard.KEY_3:
-                // le choix est de sortir du jeu (quitter l'application)
-                choix = MENU_VAL.MENU_SORTIE;
-        }
-        return choix;
-    }
-    /**
-     * Menu de jeu
-     *
-     * @return le choix du joueur une fois la partie terminée
-     */
+    
+    // fourni, à compléter
     private MENU_VAL menuJeu() throws ParserConfigurationException, SAXException, IOException {
 
         MENU_VAL playTheGame;
         playTheGame = MENU_VAL.MENU_JOUE;
-        Partie partie;
+        Partie partie = null;
         do {
             // restaure la room du menu
             env.setRoom(menuRoom);
-
-            // affiche le menu de jeu
-            textMenuQuestion.display();
-            textMenuJeu1.display();
-            textMenuJeu2.display();
-            textMenuJeu3.display();
-            textMenuJeu4.display();
-
+            // affiche menu
+            menuText.getText("Question").display();
+            menuText.getText("Jeu1").display();
+            menuText.getText("Jeu2").display();
+            menuText.getText("Jeu3").display();
+            menuText.getText("Jeu4").display();
+            
             // vérifie qu'une touche 1, 2, 3 ou 4 est pressée
-            int key = env.getKey();
-            while (!(key == Keyboard.KEY_1 || key == Keyboard.KEY_2 || key == Keyboard.KEY_3  || key == Keyboard.KEY_4)) {
-                key = env.getKey();
+            int touche = 0;
+            while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3 || touche == Keyboard.KEY_4)) {
+                touche = env.getKey();
                 env.advanceOneFrame();
             }
 
-            // efface le menu
-            textMenuQuestion.clean();
-            textMenuJeu1.clean();
-            textMenuJeu2.clean();
-            textMenuJeu3.clean();
-            textMenuJeu4.clean();
+            // nettoie l'environnement du texte
+            menuText.getText("Question").clean();
+            menuText.getText("Jeu1").clean();
+            menuText.getText("Jeu2").clean();
+            menuText.getText("Jeu3").clean();
+            menuText.getText("Jeu4").clean();
 
             // restaure la room du jeu
             env.setRoom(mainRoom);
 
             // et décide quoi faire en fonction de la touche pressée
-            switch (key) {
+            switch (touche) {
                 // -----------------------------------------
                 // Touche 1 : Commencer une nouvelle partie
                 // -----------------------------------------                
                 case Keyboard.KEY_1: 
                     // choisi un niveau et charge un mot depuis le dico
                     int niveau = getNiveau() ;
-                    this.dico = new Dico("src/test/dico.xml") ;
+                    this.dico = new Dico("src/xmlFile/dico.xml") ;
+                    
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
-                    // crée un nouvelle partie
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD MMM YYY 'à' HH:MM") ;
+                    
+                    // Preciser le date
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY 'à' HH:MM") ;
                     String date = dateFormat.format(new Date()) ;
-                    partie = new Partie(date,mot,niveau);
+                    // crée un nouvelle partie
+                    partie = new Partie(date,mot, 1);
                     // joue
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
                     profil.ajouterPartie(partie) ;
-                    profil.sauvegarder("");
-                    // .......... profil .........
+                    profil.sauvegarder("profil");
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
 
                 // -----------------------------------------
                 // Touche 2 : Charger une partie existante
                 // -----------------------------------------                
-                case Keyboard.KEY_2: // charge une partie existante
-                    // demander de fournir une date
-                    String datePartie ;
-                    datePartie = getDate() ;
-                    // tenter de trouver une partie à cette date
-                    Partie partieChercher = profil.getPartie(datePartie) ;
-                    // Si partie trouvée, recupère le mot de la partie existante, sinon ???
-                    if(partieChercher!=null) {
-                       // joue
-                       joue(partieChercher);
-                       // enregistre la partie dans le profil --> enregistre le profil
-                       profil.ajouterPartie(partieChercher) ;
-                       profil.sauvegarder("");
-                       playTheGame = MENU_VAL.MENU_JOUE ;
+                case Keyboard.KEY_2: 
+                    // charger une partie existante
+                    String datePartie = getDate();
+                    ArrayList<Partie> parties = profil.getParties() ;
+                    for(Partie p : parties) {
+                        if(p.getDate().equals(datePartie)){
+                            partie = p ;
+                            parties.remove(p);
+                        }
                     }
-                    else {
-                       playTheGame = MENU_VAL.MENU_JOUE ;
-                    }
-                   
-             
+                    // Recupère le mot de la partie existante
+                    // ..........
+                    // joue
+                    joue(partie);
+                    // enregistre la partie dans le profil --> enregistre le profil
+                    profil.ajouterPartie(partie);
+                    profil.sauvegarder(profil.getNomJoueur());
+                    // .......... profil.******
+                    playTheGame = MENU_VAL.MENU_JOUE;
                     break;
 
                 // -----------------------------------------
@@ -322,72 +253,204 @@ enum MENU_VAL {
         } while (playTheGame == MENU_VAL.MENU_JOUE);
         return playTheGame;
     }
+    private MENU_VAL menuJeu1() throws ParserConfigurationException, SAXException, IOException {
 
+        MENU_VAL playTheGame;
+        playTheGame = MENU_VAL.MENU_JOUE;
+        Partie partie = null;
+        do {
+            // restaure la room du menu
+            env.setRoom(menuRoom);
+            // affiche menu
+            menuText.getText("Question").display();
+            menuText.getText("Jeu1").display();
+            menuText.getText("Jeu3").display();
+            menuText.getText("Jeu4").display();
+            
+            // vérifie qu'une touche 1, 2, 3 ou 4 est pressée
+            int touche = 0;
+            while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3  )) {
+                touche = env.getKey();
+                env.advanceOneFrame();
+            }
+
+            // nettoie l'environnement du texte
+            menuText.getText("Question").clean();
+            menuText.getText("Jeu1").clean();
+            menuText.getText("Jeu3").clean();
+            menuText.getText("Jeu4").clean();
+
+            // restaure la room du jeu
+            env.setRoom(mainRoom);
+
+            // et décide quoi faire en fonction de la touche pressée
+            switch (touche) {
+                // -----------------------------------------
+                // Touche 1 : Commencer une nouvelle partie
+                // -----------------------------------------                
+                case Keyboard.KEY_1: 
+                    // choisi un niveau et charge un mot depuis le dico
+                    int niveau = getNiveau() ;
+                    this.dico = new Dico("src/test/dico.xml") ;
+                    String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
+                    // Preciser le date
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY 'à' HH:MM") ;
+                    String date = dateFormat.format(new Date()) ;
+                    // crée un nouvelle partie
+                    partie = new Partie(date,mot, 1);
+                    // joue
+                    joue(partie);
+                    // enregistre la partie dans le profil --> enregistre le profil
+                    profil.ajouterPartie(partie) ;
+                    profil.sauvegarder("profil");
+                    playTheGame = MENU_VAL.MENU_JOUE;
+                    break;
+                    
+                // -----------------------------------------
+                // Touche 3 : Sortie de ce jeu
+                // -----------------------------------------                
+                case Keyboard.KEY_2:
+                    playTheGame = MENU_VAL.MENU_CONTINUE;
+                    break;
+
+                // -----------------------------------------
+                // Touche 4 : Quitter le jeu
+                // -----------------------------------------                
+                case Keyboard.KEY_3:
+                    playTheGame = MENU_VAL.MENU_SORTIE;
+            }
+        } while (playTheGame == MENU_VAL.MENU_JOUE);
+        return playTheGame;
+    }
+    private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException {
+
+        MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
+        String nomJoueur;
+        String dateNaissance ;
+
+        // restaure la room du menu
+        env.setRoom(menuRoom);
+
+        menuText.getText("Question").display();
+        menuText.getText("Principal1").display();
+        menuText.getText("Principal2").display();
+        menuText.getText("Principal3").display();
+               
+        // vérifie qu'une touche 1, 2 ou 3 est pressée
+        int touche = 0;
+        while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3)) {
+            touche = env.getKey();
+            env.advanceOneFrame();
+        }
+
+        menuText.getText("Question").clean();
+        menuText.getText("Principal1").clean();
+        menuText.getText("Principal2").clean();
+        menuText.getText("Principal3").clean();
+
+        // et décide quoi faire en fonction de la touche pressée
+        switch (touche) {
+            // -------------------------------------
+            // Touche 1 : Charger un profil existant
+            // -------------------------------------
+            case Keyboard.KEY_1:
+                // demande le nom du joueur existant
+                nomJoueur = getNomJoueur();
+                // charge le profil de ce joueur si possible
+                if (profil.charger(nomJoueur)) {
+                    profil = new Profil(nomJoueur) ;
+                    choix = menuJeu();
+                } else {
+                    choix = MENU_VAL.MENU_SORTIE;//CONTINUE;
+                }
+                break;
+
+            // -------------------------------------
+            // Touche 2 : Créer un nouveau joueur
+            // -------------------------------------
+            case Keyboard.KEY_2:
+                // demande le nom du nouveau joueur
+                nomJoueur = getNomJoueur();
+                // demande la date de naissance
+                dateNaissance = getDate() ;
+                // crée un profil avec le nom d'un nouveau joueur
+                profil = new Profil(nomJoueur,dateNaissance);
+                choix = menuJeu1();
+                break;
+
+            // -------------------------------------
+            // Touche 3 : Sortir du jeu
+            // -------------------------------------
+            case Keyboard.KEY_3:
+                choix = MENU_VAL.MENU_SORTIE;
+        }
+        return choix;
+    }
+
+    @SuppressWarnings("unchecked")
     public void joue(Partie partie) {
-   
+
         // Instancie un Tux
-        tux = new Tux(env,mainRoom) ;
+        tux = new Tux(env, mainRoom);
         env.addObject(tux);
+        lettres = new ArrayList() ;
+        lettres = getMotList(partie.getMot()) ;
+        for(Letter l : lettres) {
+            env.addObject(l);
+        
+        }
 
         // Ici, on peut initialiser des valeurs pour une nouvelle partie
         demarrePartie(partie);
+
         // Boucle de jeu
-        boolean finished = false;
+        Boolean finished;
+        finished = false;
         while (!finished) {
- 
+
             // Contrôles globaux du jeu (sortie, ...)
             //1 is for escape key
             if (env.getKey() == 1) {
-                finished = true ;
-            }            
+                finished = true;
+            }
 
             // Contrôles des déplacements de Tux (gauche, droite, ...)
             tux.deplacer();
- 
+
             // Ici, on applique les regles
             appliqueRegles(partie);
- 
+
             // Fait avancer le moteur de jeu (mise à jour de l'affichage, de l'écoute des événements clavier...)
             env.advanceOneFrame();
         }
- 
+
         // Ici on peut calculer des valeurs lorsque la partie est terminée
         terminePartie(partie);
-                 
 
     }
-    protected abstract void demarrePartie(Partie partie);
-    protected abstract void appliqueRegles(Partie partie);
-    protected abstract void terminePartie(Partie partie);
-    protected double distance(Letter letter) {
-        return Math.sqrt(Math.pow(tux.getX()-letter.getX(), 2)+Math.pow(tux.getY()-letter.getY(), 2)+Math.pow(tux.getZ()-letter.getZ(), 2));
-    }
-    protected boolean collision(Letter letter) {
-        return (distance(letter) < 2.0) ;
-        
-    }
-    public ArrayList<Letter> getListLetters() {
-        return lettres ;
     
-    }
     private int getNiveau() {
-        textNiveauJeu.modify("Choisissez le niveau de difficulté (1-5) : ");
         int niveau = 0;
-        int key = 0;
+        menuText.getText("NiveauJeu").display();
+        niveau = Integer.parseInt(menuText.getText("NiveauJeu").lire(true));
+        /*int key = 0;
         while(niveau > 5 && niveau < 1 && key !=Keyboard.KEY_RETURN) {
             key =  env.getKey();
             if(isNumber(key)) niveau = key ;
             env.advanceOneFrame();
         
-        }
-        
-        return niveau ;
+        }*/
+        menuText.getText("NiveauJeu").clean();
+        return niveau ;    
     }
 
     private String getDate() {
-        textNomJoueur.modify("Choisissez une date de partie : "); 
-        int key = 0 ;
-        String date = null ;
+        String date = "";
+        menuText.getText("DateJeu").display();
+        date = menuText.getText("DateJeu").lire(true);
+        
+             
+        /*int key = 0 ;
         while(!(date.length()>0 && key == Keyboard.KEY_RETURN)) {
             key = 0 ;
             while(!isNumber(key) && key != Keyboard.KEY_BACKSLASH && key != Keyboard.KEY_RETURN) {
@@ -399,9 +462,41 @@ enum MENU_VAL {
             }
     
     
-        }
-        return date;
+        }*/
+        menuText.getText("DateJeu").clean();     
+        return date;    
     }
     
-    
+    protected double distance(Letter letter) {
+        return Math.sqrt(Math.pow(tux.getX()-letter.getX(), 2)+Math.pow(tux.getY()-letter.getY(), 2)+Math.pow(tux.getZ()-letter.getZ(), 2));
+    }
+    protected boolean collision(Letter letter) {
+        return (distance(letter) < 2.0) ;
+        
+    }
+    ArrayList<Letter> getMotList(String mot) {
+        ArrayList<Letter> listeLettre = new ArrayList(mot.length()) ;
+        Random r ;
+        double lx;
+        double lz;
+        for(char l : mot.toCharArray()) {
+            r = new Random() ;
+            do {
+                 lx = r.nextInt((int) tux.getX()) ;
+            }while(lx+6>tux.getX() && lx-6<tux.getX() && lx+2 > mainRoom.getWidth() && l-2 > 0);
+            
+            do {
+                 lz = r.nextInt((int) tux.getZ()) ;
+            }while(lz+6>tux.getZ() && lz-6<tux.getZ() && lx+2 > mainRoom.getDepth() && l-2 > 2);
+            listeLettre.add(new Letter(l,lx,lz)) ;
+        }
+        return listeLettre;
+        
+    }
+    protected abstract void demarrePartie(Partie partie);
+
+    protected abstract void appliqueRegles(Partie partie);
+
+    protected abstract void terminePartie(Partie partie);
+
 }
