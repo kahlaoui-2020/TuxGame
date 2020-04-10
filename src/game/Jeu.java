@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import static jdk.nashorn.internal.runtime.JSType.isNumber;
 import org.lwjgl.input.Keyboard;
 import org.xml.sax.SAXException;
@@ -97,7 +98,7 @@ public abstract class Jeu {
      * Gère le menu principal
      *
      */
-    public void execute() throws ParserConfigurationException, SAXException, IOException {
+    public void execute() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
         MENU_VAL mainLoop;
         mainLoop = MENU_VAL.MENU_SORTIE;
@@ -156,7 +157,7 @@ public abstract class Jeu {
 
     
     // fourni, à compléter
-    private MENU_VAL menuJeu() throws ParserConfigurationException, SAXException, IOException {
+    private MENU_VAL menuJeu() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
         MENU_VAL playTheGame;
         playTheGame = MENU_VAL.MENU_JOUE;
@@ -253,7 +254,7 @@ public abstract class Jeu {
         } while (playTheGame == MENU_VAL.MENU_JOUE);
         return playTheGame;
     }
-    private MENU_VAL menuJeu1() throws ParserConfigurationException, SAXException, IOException {
+    private MENU_VAL menuJeu1() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
         MENU_VAL playTheGame;
         playTheGame = MENU_VAL.MENU_JOUE;
@@ -322,7 +323,7 @@ public abstract class Jeu {
         } while (playTheGame == MENU_VAL.MENU_JOUE);
         return playTheGame;
     }
-    private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException {
+    private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
         MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
         String nomJoueur;

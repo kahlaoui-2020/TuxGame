@@ -6,24 +6,30 @@
 package test;
 
 import game.Dico;
+import game.Partie;
 import game.Profil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
 /**
  *
  * @author kahlaoui
  */
 public class TestDico {
     
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException {
      
         Dico dico = new Dico("src/xmlFile/dico.xml") ;
         int niveau = 3 ;
         String mot = dico.getMotDepuisListeNiveaux(niveau) ;
         System.out.println(mot);
+        //Document _doc = fromXML("scr/xmlFile/profil.xml");
+//        Profil profil1 = new Profil("profil");
+    //    ArrayList<Partie> parties = profil1.getParties() ;
         Profil profil = new Profil("Sami","00-00-0000") ;
         System.out.println("Done");
         /*for(int i = 0; i<5; i++) {

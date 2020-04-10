@@ -55,6 +55,9 @@ public class Partie {
     public void setTemps(double temps) {
         this.temps = temps ;
     }
+    public double getTemps() {
+        return this.temps ;
+    }
     public int getNiveau() {
         return niveau ;
     }

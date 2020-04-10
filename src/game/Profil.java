@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -30,15 +31,17 @@ public class Profil {
     public Document _doc;
     
     
-    public Profil(String nom, String dateNaissance) throws ParserConfigurationException {
+    public Profil(String nom, String dateNaissance) throws ParserConfigurationException, TransformerException {
         this.nom = nom ;
         this.dateNaissance = dateNaissance ;
         sauvegarder(nom) ;
     }
     
+   
+    
     // Cree un DOM à partir d'un fichier XML
     public Profil(String nomFichier) {
-        _doc = fromXML("scr/xmlFile/"+nomFichier+".xml");
+        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/scr/xmlFile/"+nomFichier+".xml");
         
     
         Node nodeProfil = _doc.getFirstChild() ;
@@ -102,13 +105,57 @@ public class Profil {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.newDocument();
-        /**/
+        
+        Element profileElt = document.createElement("profil");
+        profileElt.setAttribute("xmlns", "http://myGame/tux");
+        profileElt.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
+        profileElt.setAttribute("xsi:schemaLocation","http://myGame/tux src/xmlFile/"+filename+".xsd");
+        
+        Element nomJoueurElt = document.createElement("nom");
+        nomJoueurElt.setTextContent(this.nom);
+        
+        Element avatarElt = document.createElement("avatar");
+        avatarElt.setTextContent(this.avatar);
+        
+        Element dateAnnElt = document.createElement("anniversaire");
+        dateAnnElt.setTextContent(this.dateNaissance);
+        
+        Element partiesElt = document.createElement("parties");
+        for(Partie p : this.parties) {
+            
+            Element partieElt = document.createElement("partie");
+            partieElt.setAttribute("date",p.getDate());
+            
+            Element tempsElt = document.createElement("temps");
+            tempsElt.setTextContent(Double.toString(p.getTemps()));
+            
+            Element motElt = document.createElement("mot");
+            motElt.setAttribute("niveau",Integer.toString(p.getNiveau()));
+            motElt.setTextContent(p.getMot());
+            
+            partieElt.appendChild(tempsElt);
+            partieElt.appendChild(motElt);
+            partiesElt.appendChild(partieElt);
+        }
+        profileElt.appendChild(nomJoueurElt);
+        profileElt.appendChild(avatarElt);
+        profileElt.appendChild(dateAnnElt);
+        profileElt.appendChild(partiesElt);
+        document.appendChild(profileElt);
+        
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
-        
         DOMSource source = new DOMSource(document) ;
         StreamResult sortie = new StreamResult(new File("src/xmlFile/"+filename+".xml")) ;
+        
+        //prologue
+	transformer.setOutputProperty(OutputKeys.VERSION, "1.0");
+	transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+          
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        
         transformer.transform(source, sortie);
+        
     }
     /// Takes a date in XML format (i.e. ????-??-??) and returns a date
     /// in profile format: dd/mm/yyyy
@@ -146,7 +193,7 @@ public class Profil {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    ArrayList<Partie> getParties() {
+    public ArrayList<Partie> getParties() {
         return parties;
     }
 
