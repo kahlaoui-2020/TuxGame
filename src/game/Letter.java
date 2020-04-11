@@ -14,12 +14,12 @@ import env3d.advanced.EnvNode;
 public class Letter extends EnvNode {
     
     char letter ;
-    public Letter(char l, double x, double y) {
+    public Letter(char l, double x, double z) {
         letter = l ;
-        setScale(2.0) ;
+        setScale(5.0) ;
         setX(x) ;
         setY(getScale()*1.1) ;
-        // setZ(z) ;
+        setZ(z) ;
         if(" ".equals(l)) {
             setModel("/models/letter/cube.obj");
         } else {
@@ -27,6 +27,10 @@ public class Letter extends EnvNode {
         }
        
         
+    }
+
+    public char getChar() {
+        return letter ;
     }
 
    

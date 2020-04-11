@@ -33,6 +33,7 @@ public class Tux extends EnvNode {
        // Haut
         this.setRotateY(180);
         this.setZ(this.getZ() - 1.0);
+        
        }
        if (env.getKeyDown(Keyboard.KEY_Q) || env.getKeyDown(Keyboard.KEY_LEFT)) { // Fleche 'gauche' ou Q
        // Gauche

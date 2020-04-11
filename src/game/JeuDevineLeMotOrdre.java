@@ -6,6 +6,7 @@
 package game;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -21,37 +22,27 @@ public class JeuDevineLeMotOrdre extends Jeu{
     public JeuDevineLeMotOrdre() throws ParserConfigurationException, SAXException, IOException {
         super() ;
     }
-    private boolean TuxTrouveLettre() {
-        /*if(collision(getListLetters().get(0))) {
-            getListLetters().remove(0) ;  A verifie 
-            return true ;
-        }
-        else */
-        return false ;
-    }
-    /*
-    private boolean tuxTrouveLettre() {
-        boolean found = false;
-        int lengthMot = partie.getMot().length() ;
-        int index = lengthMot - nbLettresRestantes;
-        
     
-        
-        
-        
-        if(collision(letter))
-        {
-            found = true;
-            env.removeObject(lettres.get(index));
+    private boolean TuxTrouveLettre(Partie partie) {
+        ArrayList<Letter> letters = new ArrayList() ;
+        letters = getLetters() ;
+        // getListLetterFromMot(partie.getMot());
+        for(Letter l : letters) {
+            if(collision(l)) {
+                removeLetterFromEnv(l) ;
+                return true ;
+            } 
         }
-        return found ;
-        
+        return false ; 
     }
     
     
     
-    */
 
+    
+    
+    
+    
     protected void demarrePartie(Partie partie) {
         nbLettresRestantes = partie.getMot().length() ;
         chrono = new Chronometre(60) ;
@@ -60,7 +51,7 @@ public class JeuDevineLeMotOrdre extends Jeu{
 
     @Override
     protected void appliqueRegles(Partie partie) {
-        if(TuxTrouveLettre()) {
+        if(TuxTrouveLettre(partie)) {
             nbLettresRestantes-- ;
             partie.setTrouve(nbLettresRestantes) ;
         }
@@ -73,9 +64,8 @@ public class JeuDevineLeMotOrdre extends Jeu{
         partie.setTrouve(nbLettresRestantes);
     }
 
-    private Object getListLetters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
+    
     private int getNbLettresRestantes() {
         return nbLettresRestantes ;
     

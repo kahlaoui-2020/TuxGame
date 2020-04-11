@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<profil xmlns="http://myGame/tux" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myGame/tux src/xmlFile/Sami.xsd">
-<nom>Sami</nom>
-<avatar/>
-<anniversaire>00-00-0000</anniversaire>
-<parties/>
-</profil>

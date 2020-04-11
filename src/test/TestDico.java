@@ -6,6 +6,8 @@
 package test;
 
 import game.Dico;
+import game.Jeu;
+import game.Letter;
 import game.Partie;
 import game.Profil;
 import java.io.IOException;
@@ -26,11 +28,34 @@ public class TestDico {
         Dico dico = new Dico("src/xmlFile/dico.xml") ;
         int niveau = 3 ;
         String mot = dico.getMotDepuisListeNiveaux(niveau) ;
+        Jeu jeu = new Jeu() {
+            @Override
+            protected void demarrePartie(Partie partie) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            protected void appliqueRegles(Partie partie) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            protected void terminePartie(Partie partie) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        } ;
+        jeu.getListLetterFromMot(mot) ;
+        ArrayList<Letter> lettres = jeu.getLetters() ;
         System.out.println(mot);
+        for(Letter l : lettres) {
+            System.out.println("lettre : '"+l.getChar()+"' x = "+l.getZ()+", z = "+l.getX()) ;
+        
+        
+        }
         //Document _doc = fromXML("scr/xmlFile/profil.xml");
 //        Profil profil1 = new Profil("profil");
     //    ArrayList<Partie> parties = profil1.getParties() ;
-        Profil profil = new Profil("Sami","00-00-0000") ;
+        //Profil profil = new Profil("Sami","00-00-0000") ;
         System.out.println("Done");
         /*for(int i = 0; i<5; i++) {
             

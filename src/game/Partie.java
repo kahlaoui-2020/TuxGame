@@ -72,7 +72,7 @@ public class Partie {
     public String getDate() {
         return date ;
     }
-
+    
     
     
 }

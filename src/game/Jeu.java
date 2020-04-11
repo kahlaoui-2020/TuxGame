@@ -4,12 +4,10 @@
  * and open the template in the editor.
  */
 package game;
-
 import env3d.Env;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -34,7 +32,7 @@ public abstract class Jeu {
     //text (affichage des texte du jeu)
     EnvText textNomJoueur;
     EnvText textNiveauJeu ;
-    EnvText textDateJeu;
+    EnvText textDateNaissance;
     EnvText textMenuQuestion;
     protected EnvTextMap menuText;  
     EnvText textMenuJeu1;
@@ -45,7 +43,7 @@ public abstract class Jeu {
     EnvText textMenuPrincipal2;
     EnvText textMenuPrincipal3;
     
-    private final Env env;
+    private  Env env;
     private Tux tux;
     
     private  ArrayList<Letter> lettres ;
@@ -88,7 +86,7 @@ public abstract class Jeu {
         menuText.addText("4. Quitter le jeu ?", "Jeu4", 250, 220);
         menuText.addText("Choisissez un nom de joueur : ", "NomJoueur", 200, 300);
         menuText.addText("Choisissez le niveau de difficulté (1-5) : ", "NiveauJeu", 200, 300);
-        menuText.addText("Choisissez un date: ", "DateJeu", 200, 300);
+        menuText.addText("Saisir votre date de naissance (dd-mm-yyyy) : ", "DateNaissance", 200, 300);
         menuText.addText("1. Charger un profil de joueur existant ?", "Principal1", 250, 280);
         menuText.addText("2. Créer un nouveau joueur ?", "Principal2", 250, 260);
         menuText.addText("3. Sortir du jeu ?", "Principal3", 250, 240);
@@ -395,7 +393,11 @@ public abstract class Jeu {
         tux = new Tux(env, mainRoom);
         env.addObject(tux);
         lettres = new ArrayList() ;
-        lettres = getMotList(partie.getMot()) ;
+        getListLetterFromMot(partie.getMot()) ;
+       /* lettres.add(new Letter('a',50.0,27.0)) ;
+        lettres.add(new Letter('b',10.0,27.0)) ;
+        lettres.add(new Letter('c',20.0,17.0)) ;
+        lettres.add(new Letter('d',30.0,27.0)) ; */
         for(Letter l : lettres) {
             env.addObject(l);
         
@@ -446,25 +448,23 @@ public abstract class Jeu {
     }
 
     private String getDate() {
-        String date = "";
-        menuText.getText("DateJeu").display();
-        date = menuText.getText("DateJeu").lire(true);
-        
-             
-        /*int key = 0 ;
-        while(!(date.length()>0 && key == Keyboard.KEY_RETURN)) {
+        String date = null ;
+        menuText.getText("DateNaissance").display();
+        date =   menuText.getText("DateNaissance").lire(true) ;
+       /* int key = 0 ;
+        while(date==null || !(date.length()>0 && key == Keyboard.KEY_RETURN)) {
             key = 0 ;
             while(!isNumber(key) && key != Keyboard.KEY_BACKSLASH && key != Keyboard.KEY_RETURN) {
                 key = env.getKey() ;
                 env.advanceOneFrame();
             }
             if(key != Keyboard.KEY_RETURN) {
-                date += getLetter(key) ; 
+                date+=key ;
             }
     
     
         }*/
-        menuText.getText("DateJeu").clean();     
+        menuText.getText("DateNaissance").clean();     
         return date;    
     }
     
@@ -475,24 +475,33 @@ public abstract class Jeu {
         return (distance(letter) < 2.0) ;
         
     }
-    ArrayList<Letter> getMotList(String mot) {
-        ArrayList<Letter> listeLettre = new ArrayList(mot.length()) ;
-        Random r ;
+    public void getListLetterFromMot(String mot) {
+        Random rx ;
+        Random rz ;
         double lx;
         double lz;
         for(char l : mot.toCharArray()) {
-            r = new Random() ;
+            
+            rx = new Random(0.0,tux.getX()) ;
             do {
-                 lx = r.nextInt((int) tux.getX()) ;
+                 lx = rx.get() ;
             }while(lx+6>tux.getX() && lx-6<tux.getX() && lx+2 > mainRoom.getWidth() && l-2 > 0);
             
+            rz = new Random(0.0,tux.getZ()) ;
             do {
-                 lz = r.nextInt((int) tux.getZ()) ;
+                lz = rz.get() ;
+                 
             }while(lz+6>tux.getZ() && lz-6<tux.getZ() && lx+2 > mainRoom.getDepth() && l-2 > 2);
-            listeLettre.add(new Letter(l,lx,lz)) ;
+            lettres.add(new Letter(l,lx,lz)) ;
         }
-        return listeLettre;
-        
+    }
+    
+    protected void removeLetterFromEnv(Letter l) {
+        env.removeObject(l);
+        env.advanceOneFrame();
+    }
+    public ArrayList<Letter> getLetters() {
+        return lettres;
     }
     protected abstract void demarrePartie(Partie partie);
 

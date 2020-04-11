@@ -26,14 +26,16 @@ public class Profil {
     private String nom ;
     private String dateNaissance ;
     private String avatar ;
-    private ArrayList<Partie> parties ;
+    private ArrayList<Partie> parties;
     
     public Document _doc;
     
     
     public Profil(String nom, String dateNaissance) throws ParserConfigurationException, TransformerException {
+    
         this.nom = nom ;
         this.dateNaissance = dateNaissance ;
+        this.parties = new ArrayList();
         sauvegarder(nom) ;
     }
     
@@ -41,6 +43,7 @@ public class Profil {
     
     // Cree un DOM à partir d'un fichier XML
     public Profil(String nomFichier) {
+        this.parties = new ArrayList();
         _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/scr/xmlFile/"+nomFichier+".xml");
         
     
