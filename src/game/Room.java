@@ -50,6 +50,7 @@ public class Room {
     public int getWidth() {
         return width;
     }
+    
 
     public void setWidth(int width) {
         this.width = width;

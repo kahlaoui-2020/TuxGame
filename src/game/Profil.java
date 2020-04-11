@@ -1,7 +1,8 @@
 package game;
 
-import game.Partie;
 import java.io.File;
+import java.io.IOException;
+import java.text.AttributedCharacterIterator.Attribute;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import xml.XMLUtil;
 
 public class Profil {
@@ -28,7 +30,7 @@ public class Profil {
     private String avatar ;
     private ArrayList<Partie> parties;
     
-    public Document _doc;
+    private Document _doc;
     
     
     public Profil(String nom, String dateNaissance) throws ParserConfigurationException, TransformerException {
@@ -36,16 +38,15 @@ public class Profil {
         this.nom = nom ;
         this.dateNaissance = dateNaissance ;
         this.parties = new ArrayList();
-        sauvegarder(nom) ;
     }
     
    
     
     // Cree un DOM à partir d'un fichier XML
-    public Profil(String nomFichier) {
+    public Profil(String nomFichier) throws ParserConfigurationException, SAXException, IOException {
         this.parties = new ArrayList();
-        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/scr/xmlFile/"+nomFichier+".xml");
         
+        _doc = fromXML("src/xmlFile/"+this.nom+".xml") ;
     
         Node nodeProfil = _doc.getFirstChild() ;
         
@@ -87,7 +88,7 @@ public class Profil {
     // Sauvegarde un DOM en XML
     public void toXML(String nomFichier) {
         try {
-            XMLUtil.DocumentTransform.writeDoc(_doc, nomFichier);
+            XMLUtil.DocumentTransform.writeDoc(getDoc(), nomFichier);
         } catch (Exception ex) {
             Logger.getLogger(Profil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,7 +104,8 @@ public class Profil {
         return " nom du joueur "+nom+"\nNé(e) le "+dateNaissance ;
     
     }
-    public void sauvegarder(String filename) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
+   
+    public void sauvegarder() throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
         
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -112,7 +114,7 @@ public class Profil {
         Element profileElt = document.createElement("profil");
         profileElt.setAttribute("xmlns", "http://myGame/tux");
         profileElt.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        profileElt.setAttribute("xsi:schemaLocation","http://myGame/tux src/xmlFile/"+filename+".xsd");
+        profileElt.setAttribute("xsi:schemaLocation","http://myGame/tux src/xmlFile/profil.xsd");
         
         Element nomJoueurElt = document.createElement("nom");
         nomJoueurElt.setTextContent(this.nom);
@@ -128,7 +130,8 @@ public class Profil {
             
             Element partieElt = document.createElement("partie");
             partieElt.setAttribute("date",p.getDate());
-            
+            partieElt.setAttribute("trouvé",Integer.toString(p.getTrouve())+"%");
+           
             Element tempsElt = document.createElement("temps");
             tempsElt.setTextContent(Double.toString(p.getTemps()));
             
@@ -149,7 +152,7 @@ public class Profil {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(document) ;
-        StreamResult sortie = new StreamResult(new File("src/xmlFile/"+filename+".xml")) ;
+        StreamResult sortie = new StreamResult(new File("src/xmlFile/"+this.nom+".xml")) ;
         
         //prologue
 	transformer.setOutputProperty(OutputKeys.VERSION, "1.0");
@@ -191,10 +194,16 @@ public class Profil {
 
         return date;
     }
-
-    boolean charger(String nomJoueur) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    
+    public void ajouterXMLPartie(Partie p) {
+        
+    
+    
+    
     }
+
+    
 
     public ArrayList<Partie> getParties() {
         return parties;
@@ -202,6 +211,13 @@ public class Profil {
 
     String getNomJoueur() {
         return nom;
+    }
+
+    /**
+     * @return the _doc
+     */
+    public Document getDoc() {
+        return _doc;
     }
 
 } 

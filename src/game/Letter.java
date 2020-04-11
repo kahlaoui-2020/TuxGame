@@ -16,7 +16,7 @@ public class Letter extends EnvNode {
     char letter ;
     public Letter(char l, double x, double z) {
         letter = l ;
-        setScale(5.0) ;
+        setScale(4.0) ;
         setX(x) ;
         setY(getScale()*1.1) ;
         setZ(z) ;

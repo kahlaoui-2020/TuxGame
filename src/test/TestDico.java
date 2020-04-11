@@ -10,6 +10,9 @@ import game.Jeu;
 import game.Letter;
 import game.Partie;
 import game.Profil;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -25,7 +28,40 @@ public class TestDico {
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException {
      
-        Dico dico = new Dico("src/xmlFile/dico.xml") ;
+        
+        
+        
+        
+       
+        
+        String nomFichier = "/src/xmlFile/g.txt";
+        File fichier;
+ 
+        fichier = new File(nomFichier);
+        System.out.println(fichier.lastModified());
+        if (fichier.exists()) {
+            System.out.println("Le fichier existe");
+        } else {
+            System.out.println("Le fichier n'existe pas");
+        }
+        /*@SuppressWarnings("unchecked")
+        ArrayList<String> lettres = new ArrayList() ;
+        lettres.add("a") ;
+        lettres.add("b") ;
+        lettres.add("3") ;
+        lettres.add("n") ;
+        lettres.add("b") ;
+        for(String e : lettres) {
+            System.out.println(e);
+        
+        }
+        lettres.remove(1) ;
+        System.out.println("---------------------------");
+        for(String e : lettres) {
+            System.out.println(e);
+        
+        }
+        /*Dico dico = new Dico("src/xmlFile/dico.xml") ;
         int niveau = 3 ;
         String mot = dico.getMotDepuisListeNiveaux(niveau) ;
         Jeu jeu = new Jeu() {

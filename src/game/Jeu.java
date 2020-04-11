@@ -5,6 +5,7 @@
  */
 package game;
 import env3d.Env;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,14 +35,21 @@ public abstract class Jeu {
     EnvText textNiveauJeu ;
     EnvText textDateNaissance;
     EnvText textMenuQuestion;
-    protected EnvTextMap menuText;  
+    EnvTextMap menuText;  
     EnvText textMenuJeu1;
     EnvText textMenuJeu2;
     EnvText textMenuJeu3;
+    
     EnvText textMenuJeu4;
     EnvText textMenuPrincipal1;
     EnvText textMenuPrincipal2;
     EnvText textMenuPrincipal3;
+    EnvText textEtatJeu;
+    
+    EnvText textMenuJeu12;
+    EnvText textMenuJeu13;
+    
+   
     
     private  Env env;
     private Tux tux;
@@ -49,7 +57,15 @@ public abstract class Jeu {
     private  ArrayList<Letter> lettres ;
     private Profil profil;
     private  Dico dico;
-                           
+    Boolean finished;
+    
+    /**
+     *
+     * @return
+     */
+    protected EnvTextMap getMenuText() {
+        return menuText;
+    }
     
     
     
@@ -83,18 +99,25 @@ public abstract class Jeu {
         menuText.addText("1. Commencer une nouvelle partie ?", "Jeu1", 250, 280);
         menuText.addText("2. Charger une partie existante ?", "Jeu2", 250, 260);
         menuText.addText("3. Sortir de ce jeu ?", "Jeu3", 250, 240);
-        menuText.addText("4. Quitter le jeu ?", "Jeu4", 250, 220);
         menuText.addText("Choisissez un nom de joueur : ", "NomJoueur", 200, 300);
         menuText.addText("Choisissez le niveau de difficulté (1-5) : ", "NiveauJeu", 200, 300);
         menuText.addText("Saisir votre date de naissance (dd-mm-yyyy) : ", "DateNaissance", 200, 300);
         menuText.addText("1. Charger un profil de joueur existant ?", "Principal1", 250, 280);
         menuText.addText("2. Créer un nouveau joueur ?", "Principal2", 250, 260);
         menuText.addText("3. Sortir du jeu ?", "Principal3", 250, 240);
+        menuText.addText("Félicitation vous avez gagné la partie ! À la prochaine\nEntrer pour conntinuer", "TextEtatJeu", 200, 300);
+        
+        menuText.addText("2. Sortir de ce jeu ?", "Jeu12", 250, 260);
+        menuText.addText("3. Quitter le jeu ?", "Jeu13", 250, 240);
     }
 
     /**
      * Gère le menu principal
      *
+     * @throws javax.xml.parsers.ParserConfigurationException
+     * @throws org.xml.sax.SAXException
+     * @throws java.io.IOException
+     * @throws javax.xml.transform.TransformerException
      */
     public void execute() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
@@ -208,7 +231,7 @@ public abstract class Jeu {
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
                     profil.ajouterPartie(partie) ;
-                    profil.sauvegarder("profil");
+                    profil.sauvegarder();
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
 
@@ -231,7 +254,7 @@ public abstract class Jeu {
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
                     profil.ajouterPartie(partie);
-                    profil.sauvegarder(profil.getNomJoueur());
+                    profil.sauvegarder();
                     // .......... profil.******
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
@@ -262,9 +285,11 @@ public abstract class Jeu {
             env.setRoom(menuRoom);
             // affiche menu
             menuText.getText("Question").display();
+            
             menuText.getText("Jeu1").display();
-            menuText.getText("Jeu3").display();
-            menuText.getText("Jeu4").display();
+            menuText.getText("Jeu12").display(); 
+            menuText.getText("Jeu13").display(); 
+    
             
             // vérifie qu'une touche 1, 2, 3 ou 4 est pressée
             int touche = 0;
@@ -276,8 +301,9 @@ public abstract class Jeu {
             // nettoie l'environnement du texte
             menuText.getText("Question").clean();
             menuText.getText("Jeu1").clean();
-            menuText.getText("Jeu3").clean();
-            menuText.getText("Jeu4").clean();
+            menuText.getText("Jeu12").clean();
+            menuText.getText("Jeu13").clean();
+            
 
             // restaure la room du jeu
             env.setRoom(mainRoom);
@@ -293,15 +319,15 @@ public abstract class Jeu {
                     this.dico = new Dico("src/test/dico.xml") ;
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY 'à' HH:MM") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy  HH:MM") ;
                     String date = dateFormat.format(new Date()) ;
                     // crée un nouvelle partie
-                    partie = new Partie(date,mot, 1);
+                    partie = new Partie(date,mot,niveau);
                     // joue
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
                     profil.ajouterPartie(partie) ;
-                    profil.sauvegarder("profil");
+                    profil.sauvegarder();
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
                     
@@ -356,7 +382,7 @@ public abstract class Jeu {
                 // demande le nom du joueur existant
                 nomJoueur = getNomJoueur();
                 // charge le profil de ce joueur si possible
-                if (profil.charger(nomJoueur)) {
+                if (charger(nomJoueur)) {
                     profil = new Profil(nomJoueur) ;
                     choix = menuJeu();
                 } else {
@@ -394,10 +420,7 @@ public abstract class Jeu {
         env.addObject(tux);
         lettres = new ArrayList() ;
         getListLetterFromMot(partie.getMot()) ;
-       /* lettres.add(new Letter('a',50.0,27.0)) ;
-        lettres.add(new Letter('b',10.0,27.0)) ;
-        lettres.add(new Letter('c',20.0,17.0)) ;
-        lettres.add(new Letter('d',30.0,27.0)) ; */
+       
         for(Letter l : lettres) {
             env.addObject(l);
         
@@ -407,7 +430,6 @@ public abstract class Jeu {
         demarrePartie(partie);
 
         // Boucle de jeu
-        Boolean finished;
         finished = false;
         while (!finished) {
 
@@ -469,10 +491,10 @@ public abstract class Jeu {
     }
     
     protected double distance(Letter letter) {
-        return Math.sqrt(Math.pow(tux.getX()-letter.getX(), 2)+Math.pow(tux.getY()-letter.getY(), 2)+Math.pow(tux.getZ()-letter.getZ(), 2));
+        return tux.distance(letter) ;
     }
     protected boolean collision(Letter letter) {
-        return (distance(letter) < 2.0) ;
+        return (distance(letter) < 3) ;
         
     }
     public void getListLetterFromMot(String mot) {
@@ -502,6 +524,27 @@ public abstract class Jeu {
     }
     public ArrayList<Letter> getLetters() {
         return lettres;
+    }
+    public void removeLetterFromList(Letter l) {
+        lettres.remove(l) ;
+    }
+    protected Tux getTux() {
+        return tux ;
+    }
+    protected Env getEnv() {
+        return env ;
+    }
+    public Room getRoom() {
+        return mainRoom ;
+    }
+    public void setFinished(boolean bool) {
+        finished = bool ;
+    }
+    
+    boolean charger(String nomJoueur) {
+        String nomFichier = "src/xmlFile/"+nomJoueur+".xml" ;
+        File fichier = new File(nomFichier);
+        return fichier.exists() ;
     }
     protected abstract void demarrePartie(Partie partie);
 

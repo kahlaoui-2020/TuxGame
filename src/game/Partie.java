@@ -27,6 +27,8 @@ public class Partie {
         this.mot = mot ;
         this.niveau = niveau ;
     }
+
+    
     public Partie(Element partieElt) {
         this.date = xmlDateToProfileDate(partieElt.getAttribute("date")) ;
         this.temps = Double.parseDouble(partieElt.getFirstChild().getNodeValue()) ;
@@ -49,6 +51,11 @@ public class Partie {
         return parties;
  
     }
+    
+    public int getTrouve() {
+        return trouve;
+    }
+    
     public void setTrouve(int nbLettresRestantes) {
       this.trouve = (int) (((mot.length()-nbLettresRestantes)*100)/mot.length()) ;
     }
