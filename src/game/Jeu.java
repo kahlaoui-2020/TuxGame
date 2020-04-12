@@ -34,6 +34,7 @@ public abstract class Jeu {
     EnvText textNomJoueur;
     EnvText textNiveauJeu ;
     EnvText textDateNaissance;
+    EnvText textDatePartie;
     EnvText textMenuQuestion;
     EnvTextMap menuText;  
     EnvText textMenuJeu1;
@@ -98,7 +99,9 @@ public abstract class Jeu {
         menuText.addText("Voulez vous ?", "Question", 200, 300);
         menuText.addText("1. Commencer une nouvelle partie ?", "Jeu1", 250, 280);
         menuText.addText("2. Charger une partie existante ?", "Jeu2", 250, 260);
+        menuText.addText("3. Saisir la date de partie  ?", "DatePartie", 200, 300);
         menuText.addText("3. Sortir de ce jeu ?", "Jeu3", 250, 240);
+        menuText.addText("4. Quitter le jeu ?", "Jeu4", 250, 220);
         menuText.addText("Choisissez un nom de joueur : ", "NomJoueur", 200, 300);
         menuText.addText("Choisissez le niveau de difficulté (1-5) : ", "NiveauJeu", 200, 300);
         menuText.addText("Saisir votre date de naissance (dd-mm-yyyy) : ", "DateNaissance", 200, 300);
@@ -223,15 +226,14 @@ public abstract class Jeu {
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY 'à' HH:MM") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY") ;
                     String date = dateFormat.format(new Date()) ;
                     // crée un nouvelle partie
-                    partie = new Partie(date,mot, 1);
+                    partie = new Partie(date,mot,niveau);
                     // joue
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
-                    profil.ajouterPartie(partie) ;
-                    profil.sauvegarder();
+                    profil.ajouterPartieXML(partie) ;
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
 
@@ -242,20 +244,16 @@ public abstract class Jeu {
                     // charger une partie existante
                     String datePartie = getDate();
                     ArrayList<Partie> parties = profil.getParties() ;
-                    for(Partie p : parties) {
-                        if(p.getDate().equals(datePartie)){
-                            partie = p ;
-                            parties.remove(p);
-                        }
+                    int i = 0 ;
+                    while(!parties.get(i).getDate().equals(datePartie) && i<parties.size()) {
+                        i++;
                     }
-                    // Recupère le mot de la partie existante
-                    // ..........
-                    // joue
-                    joue(partie);
-                    // enregistre la partie dans le profil --> enregistre le profil
-                    profil.ajouterPartie(partie);
-                    profil.sauvegarder();
-                    // .......... profil.******
+                    if(i<parties.size()) {
+                        joue(parties.get(i));
+                        profil.ajouterPartieXML(parties.get(i));
+                    }
+                    
+                    
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
 
@@ -326,8 +324,7 @@ public abstract class Jeu {
                     // joue
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
-                    profil.ajouterPartie(partie) ;
-                    profil.sauvegarder();
+                    profil.ajouterPartieXML(partie) ;
                     playTheGame = MENU_VAL.MENU_JOUE;
                     break;
                     
@@ -381,6 +378,7 @@ public abstract class Jeu {
             case Keyboard.KEY_1:
                 // demande le nom du joueur existant
                 nomJoueur = getNomJoueur();
+                System.out.println(nomJoueur);
                 // charge le profil de ce joueur si possible
                 if (charger(nomJoueur)) {
                     profil = new Profil(nomJoueur) ;
@@ -400,6 +398,7 @@ public abstract class Jeu {
                 dateNaissance = getDate() ;
                 // crée un profil avec le nom d'un nouveau joueur
                 profil = new Profil(nomJoueur,dateNaissance);
+                profil.sauvegarder();
                 choix = menuJeu1();
                 break;
 
@@ -471,23 +470,28 @@ public abstract class Jeu {
 
     private String getDate() {
         String date = null ;
-        menuText.getText("DateNaissance").display();
-        date =   menuText.getText("DateNaissance").lire(true) ;
+        
+        menuText.getText("DatePartie").display();
+        
+       
+       // menuText.getText("DatePartie").addTextAndDisplay(date, date);
+       date =   menuText.getText("DatePartie").lire(true) ;
        /* int key = 0 ;
         while(date==null || !(date.length()>0 && key == Keyboard.KEY_RETURN)) {
             key = 0 ;
-            while(!isNumber(key) && key != Keyboard.KEY_BACKSLASH && key != Keyboard.KEY_RETURN) {
+            while(!(isNumber(key) || key == Keyboard.KEY_BACKSLASH || key == Keyboard.KEY_RETURN)) {
                 key = env.getKey() ;
                 env.advanceOneFrame();
             }
             if(key != Keyboard.KEY_RETURN) {
-                date+=key ;
+              menuText.getText("DatePartie").modify(menuText.getText("DatePartie").toString()+String.valueOf(key));
+              date += String.valueOf(key) ;
             }
     
     
         }*/
-        menuText.getText("DateNaissance").clean();     
-        return date;    
+        menuText.getText("DateNaissance").clean();  
+        return date ;    
     }
     
     protected double distance(Letter letter) {

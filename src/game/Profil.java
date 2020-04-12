@@ -38,6 +38,8 @@ public class Profil {
         this.nom = nom ;
         this.dateNaissance = dateNaissance ;
         this.parties = new ArrayList();
+        sauvegarder();
+        
     }
     
    
@@ -46,34 +48,33 @@ public class Profil {
     public Profil(String nomFichier) throws ParserConfigurationException, SAXException, IOException {
         this.parties = new ArrayList();
         
-        _doc = fromXML("src/xmlFile/"+this.nom+".xml") ;
+        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+nomFichier+".xml") ;
     
-        Node nodeProfil = _doc.getFirstChild() ;
+        this.nom = _doc.getElementsByTagName("nom").item(0).getTextContent();
+        this.dateNaissance = xmlDateToProfileDate(_doc.getElementsByTagName("anniversaire").item(0).getTextContent());
+        this.avatar = _doc.getElementsByTagName("avatar").item(0).getTextContent();
         
-        this.nom = nodeProfil.getChildNodes().item(0).getNodeValue() ;
-        this.dateNaissance = xmlDateToProfileDate(nodeProfil.getChildNodes().item(2).getNodeValue()) ;
-        this.avatar = nodeProfil.getChildNodes().item(1).getNodeValue() ;
-        NodeList nodeParties = nodeProfil.getChildNodes().item(3).getChildNodes();
-        
+        NodeList node = _doc.getElementsByTagName("partie");
         Partie partie ;
-        Node partieNode ;
         String date ;
         String mot ;
         int niveau ;
+        int trouve ;
         double temps ;
-        
-        for(int i = 0; i < nodeParties.getLength(); i++) {
-            partieNode = nodeParties.item(i);
-            date = xmlDateToProfileDate(((Element)partieNode).getAttribute("date")) ;
-            temps = Double.valueOf(partieNode.getFirstChild().getNodeValue()) ;
-            mot = partieNode.getLastChild().getNodeValue() ;
-            niveau = Integer.valueOf(((Element)(partieNode.getLastChild())).getAttribute("niveau")) ;
+        for(int i = 0; i<node.getLength();i++) {
+            date = xmlDateToProfileDate(((Element)node.item(i)).getAttribute("date")) ;
+            trouve = Integer.valueOf(((Element)node.item(i)).getAttribute("trouvé"));
+            mot = ((Element)node.item(i)).getElementsByTagName("mot").item(0).getTextContent();
+            temps = Double.valueOf(((Element)node.item(i)).getElementsByTagName("temps").item(0).getTextContent());
+            niveau = Integer.valueOf( ((Element)((Element)node.item(i)).getElementsByTagName("mot").item(0)).getAttribute("niveau") );
             partie = new Partie(date,mot,niveau) ;
             partie.setTemps(temps);
-            parties.add(partie) ;
+            partie.setTrouve(trouve);
+            this.parties.add(partie);        
         }
-       
     }
+
+   
 
     // Cree un DOM à partir d'un fichier XML
     public Document fromXML(String nomFichier) {
@@ -97,6 +98,29 @@ public class Profil {
     public void ajouterPartie(Partie p) {
         this.parties.add(p) ;
     }
+    public void ajouterPartieXML(Partie p) {
+        
+        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+this.nom+".xml");
+        
+        Element partiesElt = (Element) _doc.getElementsByTagName("parties").item(0) ;
+        
+        Element partieElt = _doc.createElement("partie");
+        partieElt.setAttribute("date",profileDateToXmlDate(p.getDate()));
+        partieElt.setAttribute("trouvé",Integer.toString(p.getTrouve()));
+           
+        Element tempsElt = _doc.createElement("temps");
+        tempsElt.setTextContent(Double.toString(p.getTemps()));
+            
+        Element motElt = _doc.createElement("mot");
+        motElt.setAttribute("niveau",Integer.toString(p.getNiveau()));
+        motElt.setTextContent(p.getMot());
+            
+        partieElt.appendChild(tempsElt);
+        partieElt.appendChild(motElt);
+        partiesElt.appendChild(partieElt);
+        toXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+this.nom+".xml") ;
+        
+    }
     public int getDernierNiveau() {
         return parties.get(parties.size()-1).getNiveau() ;
     }
@@ -104,7 +128,7 @@ public class Profil {
         return " nom du joueur "+nom+"\nNé(e) le "+dateNaissance ;
     
     }
-   
+  
     public void sauvegarder() throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
         
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -123,26 +147,10 @@ public class Profil {
         avatarElt.setTextContent(this.avatar);
         
         Element dateAnnElt = document.createElement("anniversaire");
-        dateAnnElt.setTextContent(this.dateNaissance);
+        dateAnnElt.setTextContent(profileDateToXmlDate(this.dateNaissance));
         
         Element partiesElt = document.createElement("parties");
-        for(Partie p : this.parties) {
-            
-            Element partieElt = document.createElement("partie");
-            partieElt.setAttribute("date",p.getDate());
-            partieElt.setAttribute("trouvé",Integer.toString(p.getTrouve())+"%");
-           
-            Element tempsElt = document.createElement("temps");
-            tempsElt.setTextContent(Double.toString(p.getTemps()));
-            
-            Element motElt = document.createElement("mot");
-            motElt.setAttribute("niveau",Integer.toString(p.getNiveau()));
-            motElt.setTextContent(p.getMot());
-            
-            partieElt.appendChild(tempsElt);
-            partieElt.appendChild(motElt);
-            partiesElt.appendChild(partieElt);
-        }
+        
         profileElt.appendChild(nomJoueurElt);
         profileElt.appendChild(avatarElt);
         profileElt.appendChild(dateAnnElt);
@@ -196,12 +204,6 @@ public class Profil {
     }
     
     
-    public void ajouterXMLPartie(Partie p) {
-        
-    
-    
-    
-    }
 
     
 
