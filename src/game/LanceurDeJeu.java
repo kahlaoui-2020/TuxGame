@@ -16,7 +16,7 @@ import org.xml.sax.SAXException;
  */
 public class LanceurDeJeu {
     
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException, InterruptedException {
     
     Jeu jeu ;
     jeu = new JeuDevineLeMotOrdre() ;

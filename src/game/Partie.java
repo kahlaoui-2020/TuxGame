@@ -5,7 +5,6 @@
  */
 package game;
 
-import static game.Profil.xmlDateToProfileDate;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +29,7 @@ public class Partie {
 
     
     public Partie(Element partieElt) {
-        this.date = xmlDateToProfileDate(partieElt.getAttribute("date")) ;
+        this.date = partieElt.getAttribute("date") ;
         this.temps = Double.parseDouble(partieElt.getFirstChild().getNodeValue()) ;
         this.niveau = Integer.parseInt(((Element)(partieElt.getLastChild())).getAttribute("niveau")) ;
         this.mot = partieElt.getLastChild().getNodeValue() ;
@@ -78,6 +77,10 @@ public class Partie {
 
     public String getDate() {
         return date ;
+    }
+
+    String getLettre() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     

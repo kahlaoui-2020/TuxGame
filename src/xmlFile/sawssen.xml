@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profil xmlns="http://myGame/tux" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myGame/tux src/xmlFile/profil.xsd">
+<nom>sawssen</nom>
+<avatar/>
+<anniversaire>00-00-0000</anniversaire>
+<parties>
+        
+    <partie date="2020-57-13" trouvé="100">
+            <temps>21.0</temps>
+            <mot niveau="2">maison</mot>
+        </partie>
+    <partie date="2020-58-13" trouvé="0">
+            <temps>32.0</temps>
+            <mot niveau="2">maison</mot>
+        </partie>
+    <partie date="2020-01-13" trouvé="77">
+            <temps>31.0</temps>
+            <mot niveau="5">courageux</mot>
+        </partie>
+    <partie date="2020-01-13" trouvé="0">
+            <temps>64.0</temps>
+            <mot niveau="2">fille</mot>
+        </partie>
+    <partie date="2020-00-13" trouvé="0">
+            <temps>104.0</temps>
+            <mot niveau="2">maison</mot>
+        </partie>
+    <partie date="2020-16-13" trouvé="100">
+            <temps>7.0</temps>
+            <mot niveau="0">chat</mot>
+        </partie>
+    </parties>
+</profil>

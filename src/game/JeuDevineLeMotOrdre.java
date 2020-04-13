@@ -5,6 +5,7 @@
  */
 package game;
 
+import static com.sun.corba.se.impl.orbutil.CorbaResourceUtil.getText;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,6 +55,8 @@ public class JeuDevineLeMotOrdre extends Jeu{
 
     @Override
     protected void appliqueRegles(Partie partie) {
+        
+        
         if(chrono.remainsTime()) {
             if(TuxTrouveLettre(partie)) {
                 if(TuxTrouveBonLettre()) {
@@ -104,7 +107,7 @@ public class JeuDevineLeMotOrdre extends Jeu{
     @Override
     protected void terminePartie(Partie partie) {
         chrono.stop();
-        partie.setTemps((int) chrono.getTime());
+        partie.setTemps((int) chrono.getSeconds());
         partie.setTrouve(nbLettresRestantes);
     }
 
@@ -118,6 +121,11 @@ public class JeuDevineLeMotOrdre extends Jeu{
     private int getTemps() {
         return 0 ;
     
+    }
+
+    @Override
+    protected Chronometre getTime() {
+        return chrono ;
     }
     
 

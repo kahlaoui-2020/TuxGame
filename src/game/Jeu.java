@@ -33,6 +33,9 @@ public abstract class Jeu {
     //text (affichage des texte du jeu)
     EnvText textNomJoueur;
     EnvText textNiveauJeu ;
+    EnvText textMotJeu ;
+    EnvText textAvanceJeu ;
+    EnvText textTimeJeu ;
     EnvText textDateNaissance;
     EnvText textDatePartie;
     EnvText textMenuQuestion;
@@ -56,6 +59,7 @@ public abstract class Jeu {
     private Tux tux;
     
     private  ArrayList<Letter> lettres ;
+    String mot ;
     private Profil profil;
     private  Dico dico;
     Boolean finished;
@@ -76,7 +80,7 @@ public abstract class Jeu {
         env = new Env();
 
         // Instancie une Room
-        mainRoom = new Room();
+        mainRoom = new Room("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/test/plateau.xml");
 
         // Instancie une autre Room pour les menus
         menuRoom = new Room();
@@ -112,8 +116,14 @@ public abstract class Jeu {
         
         menuText.addText("2. Sortir de ce jeu ?", "Jeu12", 250, 260);
         menuText.addText("3. Quitter le jeu ?", "Jeu13", 250, 240);
+        menuText.addText("Le mot à chercher ! ","MotJeu",200,300);
+        
+        
+        menuText.addText("", "AvanceJeu",5,450);
+        menuText.addText("","TimeJeu",450,450);
     }
 
+    
     /**
      * Gère le menu principal
      *
@@ -210,8 +220,6 @@ public abstract class Jeu {
             menuText.getText("Jeu3").clean();
             menuText.getText("Jeu4").clean();
 
-            // restaure la room du jeu
-            env.setRoom(mainRoom);
 
             // et décide quoi faire en fonction de la touche pressée
             switch (touche) {
@@ -226,10 +234,13 @@ public abstract class Jeu {
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("DD/MM/YYYY") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
                     String date = dateFormat.format(new Date()) ;
+                    // afficher mot a cherche
                     // crée un nouvelle partie
                     partie = new Partie(date,mot,niveau);
+                   
+                    
                     // joue
                     joue(partie);
                     // enregistre la partie dans le profil --> enregistre le profil
@@ -242,7 +253,7 @@ public abstract class Jeu {
                 // -----------------------------------------                
                 case Keyboard.KEY_2: 
                     // charger une partie existante
-                    String datePartie = getDate();
+                    String datePartie = getDatePartie();
                     ArrayList<Partie> parties = profil.getParties() ;
                     int i = 0 ;
                     while(!parties.get(i).getDate().equals(datePartie) && i<parties.size()) {
@@ -297,14 +308,12 @@ public abstract class Jeu {
             }
 
             // nettoie l'environnement du texte
-            menuText.getText("Question").clean();
             menuText.getText("Jeu1").clean();
             menuText.getText("Jeu12").clean();
             menuText.getText("Jeu13").clean();
             
 
-            // restaure la room du jeu
-            env.setRoom(mainRoom);
+            
 
             // et décide quoi faire en fonction de la touche pressée
             switch (touche) {
@@ -317,7 +326,7 @@ public abstract class Jeu {
                     this.dico = new Dico("src/test/dico.xml") ;
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy  HH:MM") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
                     String date = dateFormat.format(new Date()) ;
                     // crée un nouvelle partie
                     partie = new Partie(date,mot,niveau);
@@ -395,7 +404,7 @@ public abstract class Jeu {
                 // demande le nom du nouveau joueur
                 nomJoueur = getNomJoueur();
                 // demande la date de naissance
-                dateNaissance = getDate() ;
+                dateNaissance = getDateNaissance() ;
                 // crée un profil avec le nom d'un nouveau joueur
                 profil = new Profil(nomJoueur,dateNaissance);
                 profil.sauvegarder();
@@ -414,10 +423,16 @@ public abstract class Jeu {
     @SuppressWarnings("unchecked")
     public void joue(Partie partie) {
 
+        env.setRoom(mainRoom);
         // Instancie un Tux
+       // afficheMot(partie.getMot()) ;
         tux = new Tux(env, mainRoom);
+        menuText.getText("AvanceJeu").display();
+        menuText.getText("TimeJeu").display();
+        afficheMot(partie.getMot()) ;
         env.addObject(tux);
         lettres = new ArrayList() ;
+        mot = "" ;
         getListLetterFromMot(partie.getMot()) ;
        
         for(Letter l : lettres) {
@@ -440,16 +455,39 @@ public abstract class Jeu {
 
             // Contrôles des déplacements de Tux (gauche, droite, ...)
             tux.deplacer();
-
+            
             // Ici, on applique les regles
             appliqueRegles(partie);
-
+            menuText.getText("TimeJeu").modify("Remain time ! : "+getTime().getSpentTime());
+            menuText.getText("AvanceJeu").modify("Mot ! : "+mot);
+            
             // Fait avancer le moteur de jeu (mise à jour de l'affichage, de l'écoute des événements clavier...)
             env.advanceOneFrame();
         }
-
+        
         // Ici on peut calculer des valeurs lorsque la partie est terminée
         terminePartie(partie);
+        menuText.getText("AvanceJeu").clean();
+        menuText.getText("TimeJeu").clean();
+        
+    }
+    
+    private void afficheMot(String mot) {
+
+        
+        menuText.getText("MotJeu").display();
+        
+        Chronometre chrono ;
+        chrono = new Chronometre(3) ;
+        chrono.start();
+        while(chrono.remainsTime()) {
+
+        }
+        chrono.stop();
+        
+        menuText.getText("MotJeu").clean();
+   
+
 
     }
     
@@ -458,17 +496,17 @@ public abstract class Jeu {
         menuText.getText("NiveauJeu").display();
         niveau = Integer.parseInt(menuText.getText("NiveauJeu").lire(true));
         /*int key = 0;
-        while(niveau > 5 && niveau < 1 && key !=Keyboard.KEY_RETURN) {
+        while(niveau >5 && niveau < 1 && key !=Keyboard.KEY_RETURN) {
             key =  env.getKey();
             if(isNumber(key)) niveau = key ;
             env.advanceOneFrame();
-        
+        l
         }*/
         menuText.getText("NiveauJeu").clean();
         return niveau ;    
     }
 
-    private String getDate() {
+    private String getDatePartie() {
         String date = null ;
         
         menuText.getText("DatePartie").display();
@@ -490,7 +528,16 @@ public abstract class Jeu {
     
     
         }*/
+        menuText.getText("DatePartie").clean();  
+        return date ;    
+    }
+    private String getDateNaissance() {
+        String date = null ;
+        
+        menuText.getText("DateNaissance").display();
+        date =   menuText.getText("DateNaissance").lire(true) ;
         menuText.getText("DateNaissance").clean();  
+        
         return date ;    
     }
     
@@ -530,6 +577,7 @@ public abstract class Jeu {
         return lettres;
     }
     public void removeLetterFromList(Letter l) {
+        mot+= l.getChar() ;
         lettres.remove(l) ;
     }
     protected Tux getTux() {
@@ -550,6 +598,9 @@ public abstract class Jeu {
         File fichier = new File(nomFichier);
         return fichier.exists() ;
     }
+    
+    protected abstract Chronometre getTime();
+    
     protected abstract void demarrePartie(Partie partie);
 
     protected abstract void appliqueRegles(Partie partie);

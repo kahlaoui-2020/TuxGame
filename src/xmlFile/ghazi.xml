@@ -24,5 +24,9 @@
             <temps>17273.0</temps>
             <mot niveau="3">jouet</mot>
         </partie>
+    <partie date="2020-04-103" trouvé="62">
+            <temps>34695.0</temps>
+            <mot niveau="3">chocolat</mot>
+        </partie>
     </parties>
 </profil>

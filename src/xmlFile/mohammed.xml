@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profil xmlns="http://myGame/tux" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myGame/tux src/xmlFile/profil.xsd">
+<nom>mohammed</nom>
+<avatar/>
+<anniversaire>00-00-0000</anniversaire>
+<parties>
+        <partie date="2020-13-13" trouvé="100">
+            <temps>19175.0</temps>
+            <mot niveau="2">fille</mot>
+        </partie>
+    </parties>
+</profil>

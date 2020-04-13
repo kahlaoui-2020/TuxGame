@@ -5,6 +5,13 @@
  */
 package game;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import xml.XMLUtil;
+
 /**
  *
  * @author kahlaoui
@@ -30,6 +37,24 @@ public class Room {
         this.width = 100 ;
         this.height = 70 ;
     } 
+    
+    public Room(String filePath) {
+    
+        try {
+            
+            Document _doc = XMLUtil.DocumentFactory.fromFile(filePath);
+            this.depth = Integer.valueOf(_doc.getElementsByTagName("depth").item(0).getTextContent()) ;
+            this.height = Integer.valueOf(_doc.getElementsByTagName("height").item(0).getTextContent()) ;
+            this.width = Integer.valueOf(_doc.getElementsByTagName("width").item(0).getTextContent()) ;
+            this.textureBottom = _doc.getElementsByTagName("textureBottom").item(0).getTextContent() ;
+            this.textureNorth = _doc.getElementsByTagName("textureNorth").item(0).getTextContent() ;
+            this.textureEast = _doc.getElementsByTagName("textureEast").item(0).getTextContent() ;
+            this.textureWest = _doc.getElementsByTagName("textureWest").item(0).getTextContent() ;
+        } catch (Exception ex) {
+            Logger.getLogger(Room.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
 
     public int getDepth() {
         return depth;

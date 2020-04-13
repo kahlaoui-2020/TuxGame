@@ -39,7 +39,9 @@ public class Chronometre {
     public int getSeconds() {
         return (int) ((end - begin) / 1000.0);
     }
- 
+    public int getSpentTime() {
+        return (int) ((System.currentTimeMillis() - begin) / 1000.0);
+    }
     public double getMinutes() {
         return (end - begin) / 60000.0;
     }
