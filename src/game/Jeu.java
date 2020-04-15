@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import static jdk.nashorn.internal.runtime.JSType.isNumber;
@@ -116,7 +118,7 @@ public abstract class Jeu {
         
         menuText.addText("2. Sortir de ce jeu ?", "Jeu12", 250, 260);
         menuText.addText("3. Quitter le jeu ?", "Jeu13", 250, 240);
-        menuText.addText("Le mot à chercher ! ","MotJeu",200,300);
+        menuText.addText("","MotJeu",200,300);
         
         
         menuText.addText("", "AvanceJeu",5,450);
@@ -237,6 +239,7 @@ public abstract class Jeu {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
                     String date = dateFormat.format(new Date()) ;
                     // afficher mot a cherche
+                    afficheMot(mot) ;
                     // crée un nouvelle partie
                     partie = new Partie(date,mot,niveau);
                    
@@ -308,6 +311,7 @@ public abstract class Jeu {
             }
 
             // nettoie l'environnement du texte
+            menuText.getText("Question").clean();
             menuText.getText("Jeu1").clean();
             menuText.getText("Jeu12").clean();
             menuText.getText("Jeu13").clean();
@@ -328,6 +332,8 @@ public abstract class Jeu {
                     // Preciser le date
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
                     String date = dateFormat.format(new Date()) ;
+                    // Afficher Mot
+                    afficheMot(mot) ;
                     // crée un nouvelle partie
                     partie = new Partie(date,mot,niveau);
                     // joue
@@ -425,11 +431,11 @@ public abstract class Jeu {
 
         env.setRoom(mainRoom);
         // Instancie un Tux
-       // afficheMot(partie.getMot()) ;
         tux = new Tux(env, mainRoom);
         menuText.getText("AvanceJeu").display();
         menuText.getText("TimeJeu").display();
-        afficheMot(partie.getMot()) ;
+        
+        
         env.addObject(tux);
         lettres = new ArrayList() ;
         mot = "" ;
@@ -475,13 +481,13 @@ public abstract class Jeu {
     private void afficheMot(String mot) {
 
         
-        menuText.getText("MotJeu").display();
+        menuText.getText("MotJeu").modify("Le Mot à chercher ! "+mot);
         
         Chronometre chrono ;
-        chrono = new Chronometre(3) ;
+        chrono = new Chronometre(1) ;
         chrono.start();
         while(chrono.remainsTime()) {
-
+            env.advanceOneFrame();
         }
         chrono.stop();
         

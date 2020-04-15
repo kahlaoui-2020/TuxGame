@@ -6,20 +6,25 @@
 package game;
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
+import org.xml.sax.*;
+import org.xml.sax.helpers.DefaultHandler;
 /**
  *
  * @author kahlaoui
  */
-public class Dico {
+public class Dico extends DefaultHandler {
     
     private ArrayList<String> listeNiveau1;
     private ArrayList<String> listeNiveau2;
@@ -27,21 +32,27 @@ public class Dico {
     private ArrayList<String> listeNiveau4;
     private ArrayList<String> listeNiveau5;
     
-    private String cheminFichierDico ;
+    private String pathToDicoFile ;
+    
+    private StringBuffer buffer ;
+    private boolean inDico;
+    private int niveau;
+    private boolean inMot;
 
     public Dico(String filePath) throws ParserConfigurationException, SAXException, IOException {
         
+        super();
         this.listeNiveau1 = new ArrayList<String>();
         this.listeNiveau2 = new ArrayList<String>();
         this.listeNiveau3 = new ArrayList<String>();
         this.listeNiveau4 = new ArrayList<String>();
         this.listeNiveau5 = new ArrayList<String>();
             
-        this.cheminFichierDico = filePath ;
-        lireDictionnaireDOM(cheminFichierDico) ;
+        this.pathToDicoFile = filePath ;
         
     }
-    
+
+   
      public String getMotDepuisListeNiveaux(int niveau){
          
         
@@ -102,6 +113,25 @@ public class Dico {
  
     }
    
+    
+    public void lireDictionnaire() throws ParserConfigurationException, SAXException, IOException {
+        
+        
+        
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();      
+        parser.parse(pathToDicoFile,this);
+        
+        
+    
+        
+        
+        
+        
+        
+    
+    
+    }
     public ArrayList<String> getList1() {
         return listeNiveau1 ;
     }
@@ -117,6 +147,43 @@ public class Dico {
     public ArrayList<String> getList5() {
         return listeNiveau5 ;
     }
+    
+   
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                
+        if(qName.equals("dictionnaire")){
+            inDico = true;
+        }else if(qName.equals("mot")) {
+           niveau = Integer.parseInt(attributes.getValue("niveau"));
+           inMot = true ;
+           buffer = new StringBuffer();
+        }
+    };
+    
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+    
+        if(qName.equals("dictionnaire")) {
+            inDico = false ;
+        } else  {
+            ajouteMotDico(niveau,buffer.toString());
+            buffer = null;
+            inMot = false ;        
+        }
+    };
+        
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        String lecture = new String(ch,start,length);
+        if(buffer != null) buffer.append(lecture);
+    };
+
+    @Override
+    public void startDocument() throws SAXException {};
+
+    @Override
+    public void endDocument() throws SAXException {};
   
      
     
