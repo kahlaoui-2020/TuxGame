@@ -5,6 +5,7 @@
  */
 package test;
 
+import env3d.Env;
 import game.Dico;
 import game.Jeu;
 import game.Letter;
@@ -36,7 +37,12 @@ public class TestDico {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException {
         
         
-        Dico dico = new Dico("src/xmlFile/dico.xml") ;
+        
+        
+        
+        
+        
+        /*Dico dico = new Dico("src/xmlFile/dico.xml") ;
         dico.lireDictionnaire();
         System.out.println("----------------------------------");
         System.out.println("niveau 1");
@@ -67,7 +73,7 @@ public class TestDico {
         System.out.println("----------------------------------");
         for(String e : dico.getList5()) {
             System.out.println("mot : "+e);
-        }
+        }*/
         
         
     

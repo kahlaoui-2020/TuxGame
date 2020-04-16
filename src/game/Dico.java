@@ -38,6 +38,9 @@ public class Dico extends DefaultHandler {
     private boolean inDico;
     private int niveau;
     private boolean inMot;
+    
+    
+    
 
     public Dico(String filePath) throws ParserConfigurationException, SAXException, IOException {
         
@@ -97,10 +100,10 @@ public class Dico extends DefaultHandler {
         
     }
     
-    public void lireDictionnaireDOM(String filePath) throws ParserConfigurationException, SAXException, IOException {
+    public void lireDictionnaireDOM(String path, String filename) throws ParserConfigurationException, SAXException, IOException {
         
         DOMParser parser = new DOMParser() ;
-        parser.parse(filePath) ;
+        parser.parse(path+filename) ;
         Document doc = parser.getDocument() ;
         NodeList dico = doc.getElementsByTagName("mot");
         for(int i=0; i<dico.getLength(); i++) {

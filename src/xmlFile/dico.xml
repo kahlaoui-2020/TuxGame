@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
--->
-
-
-<dictionnaire
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://myGame/tux"
-    xsi:schemaLocation="http://myGame/tux ../xsd/dico.xsd">
+--><dictionnaire xmlns="http://myGame/tux" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myGame/tux dico.xsd">
     <mot niveau="3">Vieille</mot>
     <mot niveau="2">garcon</mot>
     <mot niveau="2">fille</mot>
@@ -22,4 +16,8 @@ and open the template in the editor.
     <mot niveau="4">monsieur</mot>
     <mot niveau="3">jouet</mot>
 
+<mot niveau="1">salut</mot>
+<mot niveau="1">fda</mot>
+<mot niveau="1">gdhg</mot>
+<mot niveau="1">fgtr</mot>
 </dictionnaire>

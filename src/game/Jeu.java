@@ -27,7 +27,7 @@ public abstract class Jeu {
     
 
     enum MENU_VAL {
-        MENU_SORTIE, MENU_CONTINUE, MENU_JOUE
+        MENU_SORTIE, MENU_CONTINUE, MENU_JOUE, MENU_DICO
     }
     
     private final Room mainRoom;
@@ -50,7 +50,15 @@ public abstract class Jeu {
     EnvText textMenuPrincipal1;
     EnvText textMenuPrincipal2;
     EnvText textMenuPrincipal3;
+    EnvText textMenuPrincipal4;
+
     EnvText textEtatJeu;
+    
+    EnvText textQuestionDico;
+    EnvText textAfficheDico;
+    EnvText textAjouteMot;
+    EnvText textConntinue;
+    
     
     EnvText textMenuJeu12;
     EnvText textMenuJeu13;
@@ -113,7 +121,8 @@ public abstract class Jeu {
         menuText.addText("Saisir votre date de naissance (dd-mm-yyyy) : ", "DateNaissance", 200, 300);
         menuText.addText("1. Charger un profil de joueur existant ?", "Principal1", 250, 280);
         menuText.addText("2. Créer un nouveau joueur ?", "Principal2", 250, 260);
-        menuText.addText("3. Sortir du jeu ?", "Principal3", 250, 240);
+        menuText.addText("3. Gestion de dictionnaire ?", "Principal3", 250, 240);
+        menuText.addText("4. Sortir du jeu ?", "Principal4", 250, 220);
         menuText.addText("Félicitation vous avez gagné la partie ! À la prochaine\nEntrer pour conntinuer", "TextEtatJeu", 200, 300);
         
         menuText.addText("2. Sortir de ce jeu ?", "Jeu12", 250, 260);
@@ -123,6 +132,12 @@ public abstract class Jeu {
         
         menuText.addText("", "AvanceJeu",5,450);
         menuText.addText("","TimeJeu",450,450);
+        
+        
+        menuText.addText("Voulez vous ?", "QuestionDico", 200, 300);
+        menuText.addText("1.Afficher le Dico ?", "AfficheDico", 200, 280);
+        menuText.addText("2.Ajouter un mot ?", "AjouteMot", 200, 260);
+        menuText.addText("3.Entrer pour conntinuer ?", "Conntinue", 200, 240);
     }
 
     
@@ -232,7 +247,7 @@ public abstract class Jeu {
                     // choisi un niveau et charge un mot depuis le dico
                     int niveau = getNiveau() ;
                     this.dico = new Dico("src/xmlFile/dico.xml") ;
-                    
+                    dico.lireDictionnaire();
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     
                     // Preciser le date
@@ -328,6 +343,7 @@ public abstract class Jeu {
                     // choisi un niveau et charge un mot depuis le dico
                     int niveau = getNiveau() ;
                     this.dico = new Dico("src/test/dico.xml") ;
+                    dico.lireDictionnaire();
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
@@ -359,6 +375,110 @@ public abstract class Jeu {
         } while (playTheGame == MENU_VAL.MENU_JOUE);
         return playTheGame;
     }
+    
+    
+    
+    private MENU_VAL menuDico() throws SAXException, IOException, ParserConfigurationException{
+        
+        MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
+        env.setRoom(menuRoom);
+       
+        do {
+        menuText.getText("QuestionDico").display();
+        menuText.getText("AfficheDico").display();
+        
+        menuText.getText("AjouteMot").display();
+        menuText.getText("Conntinue").display();
+    
+        int touche = 0;
+        while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3  )) {
+            touche = env.getKey();
+            env.advanceOneFrame();
+        }
+        
+        menuText.getText("QuestionDico").clean();
+        menuText.getText("AfficheDico").clean();
+        
+        menuText.getText("AjouteMot").clean();
+        menuText.getText("Conntinue").clean();
+        EditeurDico editDico = new EditeurDico("dico");
+        switch(touche) {
+            
+            case Keyboard.KEY_1 :
+                
+                editDico.lireDOM("dico");
+                int i = 0 , j = 0;
+                String listeMot = "" ;
+                
+                do {
+                    listeMot+="Mot : "+editDico.getDico().getList1().get(i)+" niveau : 1"+"\n" ;
+                    i++;
+                }while(i < editDico.getDico().getList1().size());
+                j+=i;
+                i = 0 ;
+                do {
+                    listeMot+="Mot : "+editDico.getDico().getList2().get(i)+" niveau : 2"+"\n" ;
+                    i++;
+                }while(i < editDico.getDico().getList2().size());
+                j+=i;
+                i = 0 ;
+                do {
+                    listeMot+="Mot : "+editDico.getDico().getList3().get(i)+" niveau : 3"+"\n" ;
+                    i++;
+                }while(i < editDico.getDico().getList3().size());
+                j+=i;
+                i = 0 ;
+                do {
+                    listeMot+="Mot : "+editDico.getDico().getList4().get(i)+" niveau : 4"+"\n" ;
+                    i++;
+                }while(i < editDico.getDico().getList4().size());
+                j+=i;
+                i = 0 ;
+                do {
+                    listeMot+="Mot : "+editDico.getDico().getList5().get(i)+" niveau : 5"+"\n" ;
+                    i++;
+                }while(i < editDico.getDico().getList5().size());
+                j+=i;
+                
+                EnvText menuTextList = new EnvText(env,listeMot,200,300) ;
+                menuTextList.display();
+                menuText.getText("Conntinue").moveAndDisplay(200,300-j*20+20);
+                touche = 0;
+                while (!(touche == Keyboard.KEY_RETURN)) {
+                    touche = env.getKey();
+                    env.advanceOneFrame();
+                }
+                
+                choix = MENU_VAL.MENU_DICO;
+                break;
+                
+                
+                
+            case Keyboard.KEY_2 :
+                
+                String motS = getNomJoueur() ;
+                int niveau = getNiveau()  ;
+                editDico.setFileName("dico");
+                editDico.ajouterMot(motS,niveau);
+                
+                
+                
+                
+                choix = MENU_VAL.MENU_DICO;
+                break;
+
+
+                
+                
+            case Keyboard.KEY_3:
+                choix = MENU_VAL.MENU_CONTINUE;
+                break;
+                
+            
+        }
+        }while(choix ==  MENU_VAL.MENU_DICO);
+        return choix ;
+    }
     private MENU_VAL menuPrincipal() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
         MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
@@ -372,10 +492,11 @@ public abstract class Jeu {
         menuText.getText("Principal1").display();
         menuText.getText("Principal2").display();
         menuText.getText("Principal3").display();
+        menuText.getText("Principal4").display();
                
         // vérifie qu'une touche 1, 2 ou 3 est pressée
         int touche = 0;
-        while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3)) {
+        while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3 || touche == Keyboard.KEY_4)) {
             touche = env.getKey();
             env.advanceOneFrame();
         }
@@ -384,6 +505,7 @@ public abstract class Jeu {
         menuText.getText("Principal1").clean();
         menuText.getText("Principal2").clean();
         menuText.getText("Principal3").clean();
+        menuText.getText("Principal4").clean();
 
         // et décide quoi faire en fonction de la touche pressée
         switch (touche) {
@@ -416,11 +538,18 @@ public abstract class Jeu {
                 profil.sauvegarder();
                 choix = menuJeu1();
                 break;
-
+                
             // -------------------------------------
-            // Touche 3 : Sortir du jeu
+            // Touche 3 : Gestion de Dico
             // -------------------------------------
+                
             case Keyboard.KEY_3:
+                choix = menuDico();
+                break;
+            // -------------------------------------
+            // Touche 4 : Sortir du jeu
+            // -------------------------------------
+            case Keyboard.KEY_4:
                 choix = MENU_VAL.MENU_SORTIE;
         }
         return choix;

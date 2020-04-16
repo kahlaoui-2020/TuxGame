@@ -29,5 +29,9 @@
             <temps>7.0</temps>
             <mot niveau="0">chat</mot>
         </partie>
+    <partie date="2020-42-15" trouvé="100">
+            <temps>21.0</temps>
+            <mot niveau="3">chocolat</mot>
+        </partie>
     </parties>
 </profil>
