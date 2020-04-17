@@ -33,7 +33,6 @@ public class JeuDevineLeMotOrdre extends Jeu{
         return false ; 
     } 
     private boolean TuxTrouveLettre(Partie partie) {
-        // getListLetterFromMot(partie.getMot());
         for(Letter l : getLetters()) {
             if(collision(l)){
                 letter = l ;

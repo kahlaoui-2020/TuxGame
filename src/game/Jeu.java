@@ -132,8 +132,11 @@ public abstract class Jeu {
         menuText.addText("","MotJeu",200,300);
         
         
-        menuText.addText("", "AvanceJeu",5,450);
-        menuText.addText("","TimeJeu",450,450);
+        textAvanceJeu = new EnvText(env,"Mot ! : ",5,450);
+        textAvanceJeu.setColorRGB(0.0,0.0,0.0); 
+
+        textTimeJeu = new EnvText(env,"Remain time ! : ",450,450);
+        textTimeJeu.setColorRGB(0.0,0.0,0.0); 
         
         
         menuText.addText("Voulez vous ?", "QuestionDico", 180, 300);
@@ -276,7 +279,7 @@ public abstract class Jeu {
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY") ;
                     String date = dateFormat.format(new Date()) ;
                     // afficher mot a cherche
                     afficheMot(mot) ;
@@ -380,7 +383,7 @@ public abstract class Jeu {
                     dico.lireDictionnaire();
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY") ;
                     
                     String date = dateFormat.format(new Date()) ;
                    
@@ -552,8 +555,8 @@ public abstract class Jeu {
         env.setRoom(mainRoom);
         // Instancie un Tux
         tux = new Tux(env, mainRoom);
-        menuText.getText("AvanceJeu").display();
-        menuText.getText("TimeJeu").display();
+        textAvanceJeu.display();
+        textTimeJeu.display();
         
         
         env.addObject(tux);
@@ -584,8 +587,9 @@ public abstract class Jeu {
             
             // Ici, on applique les regles
             appliqueRegles(partie);
-            menuText.getText("TimeJeu").modify("Remain time ! : "+getTime().getSpentTime());
-            menuText.getText("AvanceJeu").modify("Mot ! : "+mot);
+            textTimeJeu.addTextAndDisplay("",String.valueOf(getTime().getSpentTime()));
+            textAvanceJeu.addTextAndDisplay("", mot);
+            
             
             // Fait avancer le moteur de jeu (mise à jour de l'affichage, de l'écoute des événements clavier...)
             env.advanceOneFrame();
@@ -593,8 +597,8 @@ public abstract class Jeu {
         
         // Ici on peut calculer des valeurs lorsque la partie est terminée
         terminePartie(partie);
-        menuText.getText("AvanceJeu").clean();
-        menuText.getText("TimeJeu").clean();
+        textTimeJeu.clean();
+        textAvanceJeu.clean();
         
     }
     
@@ -710,16 +714,16 @@ public abstract class Jeu {
         double lz;
         for(char l : mot.toCharArray()) {
             
-            rx = new Random(0.0,tux.getX()) ;
+            rx = new Random(0.0,mainRoom.getWidth()) ;
             do {
                  lx = rx.get() ;
-            }while(lx+6>tux.getX() && lx-6<tux.getX() && lx+2 > mainRoom.getWidth() && l-2 > 0);
+            }while(lx+6>tux.getX() && lx-6<tux.getX());
             
-            rz = new Random(0.0,tux.getZ()) ;
+            rz = new Random(0.0,mainRoom.getDepth()) ;
             do {
                 lz = rz.get() ;
                  
-            }while(lz+6>tux.getZ() && lz-6<tux.getZ() && lx+2 > mainRoom.getDepth() && l-2 > 2);
+            }while(lz+6>tux.getZ() && lz-6<tux.getZ());
             lettres.add(new Letter(l,lx,lz)) ;
         }
     }

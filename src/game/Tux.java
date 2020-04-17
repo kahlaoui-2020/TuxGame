@@ -53,14 +53,15 @@ public class Tux extends EnvNode {
        testeRoomCollision(this.getX(),this.getZ()) ;
     
     }
-    public boolean testeRoomCollision(double x, double y) {
-        if(getX() > room.getWidth()) {
-            this.setX(room.getWidth());
-        }else if(getX() < 0) this.setX(0);
-        if(getZ() > room.getDepth()) {
-            this.setZ(room.getDepth());
-        } else if(getZ()<0) this.setZ(0);
-        return false ;
+    public void testeRoomCollision(double x, double z) {
+        if(x >= room.getWidth()-2) {
+            this.setX(room.getWidth()-2);
+        }else if(x <= 0) this.setX(2);
+        
+        if(z >= room.getDepth()) {
+            this.setZ(room.getDepth()-2);
+        } else if(z<=0) this.setZ(2);
+       
     } 
     
 }

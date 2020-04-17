@@ -81,6 +81,11 @@ public class EnvText {
         savedB = adjustColorValue(sb);
         this.env = env;
     }
+    public void setColorRGB(double r, double g, double b){
+        currentR = r;
+        currentG = g;
+        currentB = b;
+    }
 
     /**
      * ajuster la valeur x
