@@ -40,6 +40,7 @@ public abstract class Jeu {
     EnvText textTimeJeu ;
     EnvText textDateNaissance;
     EnvText textDatePartie;
+    EnvText textDateInvalide ;
     EnvText textMenuQuestion;
     EnvTextMap menuText;  
     EnvText textMenuJeu1;
@@ -113,8 +114,9 @@ public abstract class Jeu {
         menuText.addText("Voulez vous ?", "Question", 200, 300);
         menuText.addText("1. Commencer une nouvelle partie ?", "Jeu1", 250, 280);
         menuText.addText("2. Charger une partie existante ?", "Jeu2", 250, 260);
-        menuText.addText("3. Saisir la date de partie  ?", "DatePartie", 200, 300);
-        menuText.addText("3. Sortir de ce jeu ?", "Jeu3", 250, 240);
+        menuText.addText("Saisir la date de partie  ?", "DatePartie", 200, 300);
+        menuText.addText("date invalide\nTaper sur ENTRER pour continnuer !","DateInvalide",200,300);
+        menuText.addText("3. Sortir du  jeu ?", "Jeu3", 250, 240);
         menuText.addText("4. Quitter le jeu ?", "Jeu4", 250, 220);
         menuText.addText("Choisissez un nom de joueur : ", "NomJoueur", 200, 300);
         menuText.addText("Choisissez le niveau de difficulté (1-5) : ", "NiveauJeu", 200, 300);
@@ -134,10 +136,10 @@ public abstract class Jeu {
         menuText.addText("","TimeJeu",450,450);
         
         
-        menuText.addText("Voulez vous ?", "QuestionDico", 200, 300);
+        menuText.addText("Voulez vous ?", "QuestionDico", 180, 300);
         menuText.addText("1.Afficher le Dico ?", "AfficheDico", 200, 280);
         menuText.addText("2.Ajouter un mot ?", "AjouteMot", 200, 260);
-        menuText.addText("3.Entrer pour conntinuer ?", "Conntinue", 200, 240);
+        menuText.addText("Entrer pour conntinuer ", "Conntinue", 200, 50);
     }
 
     
@@ -197,6 +199,30 @@ public abstract class Jeu {
         }
         return letterStr.toLowerCase();
     }
+    
+   
+    private Boolean isNumber(int codeKey) {
+        return codeKey == Keyboard.KEY_0 || codeKey == Keyboard.KEY_1 || codeKey == Keyboard.KEY_2 || codeKey == Keyboard.KEY_3 ||
+                codeKey == Keyboard.KEY_4 || codeKey == Keyboard.KEY_5 || codeKey == Keyboard.KEY_6 || codeKey == Keyboard.KEY_7 ||
+                codeKey == Keyboard.KEY_8 || codeKey == Keyboard.KEY_9;
+    
+    
+    }
+    private int getNumber(int codeKey) {
+       switch(codeKey) {
+                                
+           case Keyboard.KEY_1 : return 1 ;
+           case Keyboard.KEY_2 : return 2 ;
+           case Keyboard.KEY_3 : return 3 ;
+           case Keyboard.KEY_4 : return 4 ;
+           case Keyboard.KEY_5 : return 5 ;
+           case Keyboard.KEY_6 : return 6 ;
+           case Keyboard.KEY_7 : return 7 ;
+           case Keyboard.KEY_8 : return 8 ;
+           case Keyboard.KEY_9 : return 9 ;
+           default: return 0;
+       }
+   }
     // fourni
     private String getNomJoueur() {
         String nomJoueur = "";
@@ -206,7 +232,6 @@ public abstract class Jeu {
         return nomJoueur;
     }
 
-    
     // fourni, à compléter
     private MENU_VAL menuJeu() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
@@ -251,7 +276,7 @@ public abstract class Jeu {
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy") ;
                     String date = dateFormat.format(new Date()) ;
                     // afficher mot a cherche
                     afficheMot(mot) ;
@@ -274,12 +299,21 @@ public abstract class Jeu {
                     String datePartie = getDatePartie();
                     ArrayList<Partie> parties = profil.getParties() ;
                     int i = 0 ;
-                    while(!parties.get(i).getDate().equals(datePartie) && i<parties.size()) {
+                    while( i<parties.size() && !parties.get(i).getDate().equals(datePartie)) {
                         i++;
                     }
                     if(i<parties.size()) {
                         joue(parties.get(i));
                         profil.ajouterPartieXML(parties.get(i));
+                    }else{
+                        int key = 0;
+                        menuText.getText("DateInvalide").display();
+                        while(key != Keyboard.KEY_RETURN){
+                            key = env.getKey();
+                            env.advanceOneFrame();
+                        }
+                        menuText.getText("DateInvalide").clean();
+                        
                     }
                     
                     
@@ -346,8 +380,10 @@ public abstract class Jeu {
                     dico.lireDictionnaire();
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd") ;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy") ;
+                    
                     String date = dateFormat.format(new Date()) ;
+                   
                     // Afficher Mot
                     afficheMot(mot) ;
                     // crée un nouvelle partie
@@ -376,8 +412,6 @@ public abstract class Jeu {
         return playTheGame;
     }
     
-    
-    
     private MENU_VAL menuDico() throws SAXException, IOException, ParserConfigurationException{
         
         MENU_VAL choix = MENU_VAL.MENU_CONTINUE;
@@ -386,9 +420,8 @@ public abstract class Jeu {
         do {
         menuText.getText("QuestionDico").display();
         menuText.getText("AfficheDico").display();
-        
         menuText.getText("AjouteMot").display();
-        menuText.getText("Conntinue").display();
+        menuText.getText("Jeu3").moveAndDisplay(200,240);
     
         int touche = 0;
         while (!(touche == Keyboard.KEY_1 || touche == Keyboard.KEY_2 || touche == Keyboard.KEY_3  )) {
@@ -400,55 +433,14 @@ public abstract class Jeu {
         menuText.getText("AfficheDico").clean();
         
         menuText.getText("AjouteMot").clean();
-        menuText.getText("Conntinue").clean();
+        menuText.getText("Jeu3").clean();
         EditeurDico editDico = new EditeurDico("dico");
         switch(touche) {
             
             case Keyboard.KEY_1 :
                 
                 editDico.lireDOM("dico");
-                int i = 0 , j = 0;
-                String listeMot = "" ;
-                
-                do {
-                    listeMot+="Mot : "+editDico.getDico().getList1().get(i)+" niveau : 1"+"\n" ;
-                    i++;
-                }while(i < editDico.getDico().getList1().size());
-                j+=i;
-                i = 0 ;
-                do {
-                    listeMot+="Mot : "+editDico.getDico().getList2().get(i)+" niveau : 2"+"\n" ;
-                    i++;
-                }while(i < editDico.getDico().getList2().size());
-                j+=i;
-                i = 0 ;
-                do {
-                    listeMot+="Mot : "+editDico.getDico().getList3().get(i)+" niveau : 3"+"\n" ;
-                    i++;
-                }while(i < editDico.getDico().getList3().size());
-                j+=i;
-                i = 0 ;
-                do {
-                    listeMot+="Mot : "+editDico.getDico().getList4().get(i)+" niveau : 4"+"\n" ;
-                    i++;
-                }while(i < editDico.getDico().getList4().size());
-                j+=i;
-                i = 0 ;
-                do {
-                    listeMot+="Mot : "+editDico.getDico().getList5().get(i)+" niveau : 5"+"\n" ;
-                    i++;
-                }while(i < editDico.getDico().getList5().size());
-                j+=i;
-                
-                EnvText menuTextList = new EnvText(env,listeMot,200,300) ;
-                menuTextList.display();
-                menuText.getText("Conntinue").moveAndDisplay(200,300-j*20+20);
-                touche = 0;
-                while (!(touche == Keyboard.KEY_RETURN)) {
-                    touche = env.getKey();
-                    env.advanceOneFrame();
-                }
-                
+                editDico.AfficheDico(env, menuText);
                 choix = MENU_VAL.MENU_DICO;
                 break;
                 
@@ -535,7 +527,6 @@ public abstract class Jeu {
                 dateNaissance = getDateNaissance() ;
                 // crée un profil avec le nom d'un nouveau joueur
                 profil = new Profil(nomJoueur,dateNaissance);
-                profil.sauvegarder();
                 choix = menuJeu1();
                 break;
                 
@@ -627,53 +618,82 @@ public abstract class Jeu {
     }
     
     private int getNiveau() {
-        int niveau = 0;
+        
+        String niveau = "" ;
         menuText.getText("NiveauJeu").display();
-        niveau = Integer.parseInt(menuText.getText("NiveauJeu").lire(true));
-        /*int key = 0;
-        while(niveau >5 && niveau < 1 && key !=Keyboard.KEY_RETURN) {
-            key =  env.getKey();
-            if(isNumber(key)) niveau = key ;
-            env.advanceOneFrame();
-        l
-        }*/
-        menuText.getText("NiveauJeu").clean();
-        return niveau ;    
+        int key = 0;
+        while(!(niveau.length() == 1 && key == Keyboard.KEY_RETURN)){
+            do{
+                key = env.getKey();
+                env.advanceOneFrame();
+            }while( !isNumber(key) && ( Integer.valueOf(getNumber(key)) > 5 || Integer.valueOf(getNumber(key))  <1 ) && key != Keyboard.KEY_BACK && key != Keyboard.KEY_RETURN);
+            if(key == Keyboard.KEY_BACK){
+                niveau = delete(niveau);
+            }else if(isNumber(key)){
+                niveau+=getLetter(key);
+            }
+            menuText.getText("NiveauJeu").addTextAndDisplay("",niveau);
+           
+        }
+            menuText.getText("NiveauJeu").clean();
+            return Integer.valueOf(niveau);    
     }
 
     private String getDatePartie() {
-        String date = null ;
         
+        String date = "";
+        int key = 0;
         menuText.getText("DatePartie").display();
         
-       
-       // menuText.getText("DatePartie").addTextAndDisplay(date, date);
-       date =   menuText.getText("DatePartie").lire(true) ;
-       /* int key = 0 ;
-        while(date==null || !(date.length()>0 && key == Keyboard.KEY_RETURN)) {
-            key = 0 ;
-            while(!(isNumber(key) || key == Keyboard.KEY_BACKSLASH || key == Keyboard.KEY_RETURN)) {
-                key = env.getKey() ;
+       while(!(date.length()==10 && key == Keyboard.KEY_RETURN)){
+            do{
+                key = env.getKey();
                 env.advanceOneFrame();
+            }while(!isNumber(key) && key != Keyboard.KEY_BACK && key != Keyboard.KEY_RETURN);
+            if(key == Keyboard.KEY_BACK) {
+                date = delete(date);
+            }else if(isNumber(key)){
+                date+=getLetter(key);
+                if(date.length() == 2 || date.length() == 5) date+="/" ;
             }
-            if(key != Keyboard.KEY_RETURN) {
-              menuText.getText("DatePartie").modify(menuText.getText("DatePartie").toString()+String.valueOf(key));
-              date += String.valueOf(key) ;
-            }
-    
-    
-        }*/
-        menuText.getText("DatePartie").clean();  
+            menuText.getText("DatePartie").addTextAndDisplay("",date);
+            
+        }
+        
+        menuText.getText("DatePartie").clean();
         return date ;    
     }
     private String getDateNaissance() {
-        String date = null ;
         
+        String date = "";
+        int key = 0;
         menuText.getText("DateNaissance").display();
-        date =   menuText.getText("DateNaissance").lire(true) ;
+        while(!(date.length()==10 && key == Keyboard.KEY_RETURN)){
+            do{
+                key = env.getKey();
+                env.advanceOneFrame();
+            }while(!isNumber(key) && key != Keyboard.KEY_BACK && key != Keyboard.KEY_RETURN);
+            if(key == Keyboard.KEY_BACK) {
+                date = delete(date);
+            }else if(isNumber(key)){
+                date+=getLetter(key);
+                if(date.length() == 2 || date.length() == 5) date+="/" ;
+            }
+            menuText.getText("DateNaissance").addTextAndDisplay("",date);
+            
+        }
+       
         menuText.getText("DateNaissance").clean();  
         
         return date ;    
+    }
+    
+    private String delete(String mot) {
+        String res = "";
+        for (int i = 0; i < mot.length() - 1; i++) {
+            res += mot.charAt(i);
+        }
+        return res;
     }
     
     protected double distance(Letter letter) {

@@ -151,7 +151,9 @@ public class Dico extends DefaultHandler {
         return listeNiveau5 ;
     }
     
-   
+    
+    
+    
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                 

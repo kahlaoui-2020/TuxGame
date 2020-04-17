@@ -226,6 +226,7 @@ public class EnvText {
         env.setDisplayStr(textPrefix + text + textSuffix, x, y, size, currentR, currentG, currentB, 1.0);
     }
 
+ 
     /**
      * suppression du texte
      */

@@ -51,7 +51,7 @@ public class Profil {
         _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+nomFichier+".xml") ;
     
         this.nom = _doc.getElementsByTagName("nom").item(0).getTextContent();
-        this.dateNaissance =_doc.getElementsByTagName("anniversaire").item(0).getTextContent();
+        this.dateNaissance = xmlDateToProfileDate(_doc.getElementsByTagName("anniversaire").item(0).getTextContent());
         this.avatar = _doc.getElementsByTagName("avatar").item(0).getTextContent();
         
         NodeList node = _doc.getElementsByTagName("partie");
@@ -62,7 +62,7 @@ public class Profil {
         int trouve ;
         double temps ;
         for(int i = 0; i<node.getLength();i++) {
-            date = ((Element)node.item(i)).getAttribute("date") ;
+            date = xmlDateToProfileDate(((Element)node.item(i)).getAttribute("date")) ;
             trouve = Integer.valueOf(((Element)node.item(i)).getAttribute("trouvé"));
             mot = ((Element)node.item(i)).getElementsByTagName("mot").item(0).getTextContent();
             temps = Double.valueOf(((Element)node.item(i)).getElementsByTagName("temps").item(0).getTextContent());
@@ -105,7 +105,7 @@ public class Profil {
         Element partiesElt = (Element) _doc.getElementsByTagName("parties").item(0) ;
         
         Element partieElt = _doc.createElement("partie");
-        partieElt.setAttribute("date",p.getDate());
+        partieElt.setAttribute("date",profileDateToXmlDate(p.getDate()));
         partieElt.setAttribute("trouvé",Integer.toString(p.getTrouve()));
            
         Element tempsElt = _doc.createElement("temps");
@@ -147,7 +147,7 @@ public class Profil {
         avatarElt.setTextContent(this.avatar);
         
         Element dateAnnElt = document.createElement("anniversaire");
-        dateAnnElt.setTextContent(this.dateNaissance);
+        dateAnnElt.setTextContent(profileDateToXmlDate(this.dateNaissance));
         
         Element partiesElt = document.createElement("parties");
         
@@ -186,6 +186,38 @@ public class Profil {
      */
     public Document getDoc() {
         return _doc;
+    }
+    
+    /// Takes a date in XML format (i.e. ????-??-??) and returns a date
+    /// in profile format: dd/mm/yyyy
+    public static String xmlDateToProfileDate(String xmlDate) {
+        String date;
+        // récupérer le jour
+        date = xmlDate.substring(xmlDate.lastIndexOf("-") + 1, xmlDate.length());
+        date += "/";
+        // récupérer le mois
+        date += xmlDate.substring(xmlDate.indexOf("-") + 1, xmlDate.lastIndexOf("-"));
+        date += "/";
+        // récupérer l'année
+        date += xmlDate.substring(0, xmlDate.indexOf("-"));
+
+        return date;
+    }
+
+    /// Takes a date in profile format: dd/mm/yyyy and returns a date
+    /// in XML format (i.e. ????-??-??)
+    public static String profileDateToXmlDate(String profileDate) {
+        String date;
+        // Récupérer l'année
+        date = profileDate.substring(profileDate.lastIndexOf("/") + 1, profileDate.length());
+        date += "-";
+        // Récupérer  le mois
+        date += profileDate.substring(profileDate.indexOf("/") + 1, profileDate.lastIndexOf("/"));
+        date += "-";
+        // Récupérer le jour
+        date += profileDate.substring(0, profileDate.indexOf("/"));
+
+        return date;
     }
 
 } 

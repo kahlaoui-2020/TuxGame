@@ -6,11 +6,8 @@
 package test;
 
 import env3d.Env;
-import game.Dico;
-import game.Jeu;
-import game.Letter;
-import game.Partie;
-import game.Profil;
+
+import game.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -34,10 +31,34 @@ import xml.XMLUtil;
 public class TestDico {
     
     @SuppressWarnings("unchecked")
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        
+        EditeurDico edit = new EditeurDico("dico");
+        edit.lireDOM("dico");
+        for(String mot : edit.getDico().getList1()){
+        System.out.println(mot);
+        }
+        for(String mot : edit.getDico().getList2()){
+        System.out.println(mot);
+        }
+        for(String mot : edit.getDico().getList3()){
+        System.out.println(mot);
+        }
+        for(String mot : edit.getDico().getList4()){
+        System.out.println(mot);
+        }
+        for(String mot : edit.getDico().getList5()){
+        System.out.println(mot);
+        }
         
         
+        /*Profil profil = new Profil("ghaieth") ;
+        ArrayList<Partie> parties = profil.getParties() ;
+        for(int i = 0; i<parties.size(); i++) {
+            System.out.println(parties.get(i).getDate());
         
+        
+        }
         
         
         

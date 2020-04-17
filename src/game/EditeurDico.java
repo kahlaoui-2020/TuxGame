@@ -2,12 +2,16 @@ package game;
 
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import env3d.Env;
+import static java.awt.SystemColor.menuText;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.lwjgl.input.Keyboard;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -42,7 +46,7 @@ public class EditeurDico {
     
     
     
-    EditeurDico (String nomFichier ) throws ParserConfigurationException, SAXException, IOException {
+    public EditeurDico (String nomFichier ) throws ParserConfigurationException, SAXException, IOException {
         
         dico = new Dico("src/xmlFile/"+nomFichier+"xml");
         
@@ -159,5 +163,50 @@ public class EditeurDico {
      */
     public void setDoc(Document doc) {
         this._doc = doc;
+    }
+
+    /**
+     *
+     * @param env
+     * @param menuText
+     */
+    public void AfficheDico(Env env, EnvTextMap menuText) {
+       
+        String listeMot1 = "" ;
+        String listeMot2 = "" ;
+        String listeMot3 = "" ;
+        String listeMot4 = "" ;
+        String listeMot5 = "" ;
+        
+        for(String mot : dico.getList1()){ listeMot1+=mot+"\n";}
+        for(String mot : dico.getList2()){ listeMot2+=mot+"\n";}
+        for(String mot : dico.getList3()){ listeMot3+=mot+"\n";}
+        for(String mot : dico.getList4()){ listeMot4+=mot+"\n";}
+        for(String mot : dico.getList5()){ listeMot5+=mot+"\n";}
+        
+        
+        EnvText menuTextList1 = new EnvText(env,listeMot1,50,400) ;
+        menuTextList1.display();
+        EnvText menuTextList2 = new EnvText(env,listeMot2,150,400) ;
+        menuTextList2.display();
+        EnvText menuTextList3 = new EnvText(env,listeMot3,250,400) ;
+        menuTextList3.display();
+        EnvText menuTextList4 = new EnvText(env,listeMot4,350,400) ;
+        menuTextList4.display();
+        EnvText menuTextList5 = new EnvText(env,listeMot5,450,400) ;
+        menuTextList5.display();
+        
+        menuText.getText("Conntinue").display();
+        int touche = 0;
+        while (!(touche == Keyboard.KEY_RETURN)) {
+            touche = env.getKey();
+            env.advanceOneFrame();
+        }
+        menuTextList1.clean();
+        menuTextList2.clean();
+        menuTextList3.clean();
+        menuTextList4.clean();
+        menuTextList5.clean();
+        menuText.getText("Conntinue").clean();
     }
 }

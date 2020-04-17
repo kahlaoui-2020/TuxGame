@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profil xmlns="http://myGame/tux" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myGame/tux src/xmlFile/profil.xsd">
+<nom>ghaieth</nom>
+<avatar/>
+<anniversaire>1998-05-30</anniversaire>
+<parties>
+        <partie date="2020-19-16" trouvé="100">
+            <temps>12.0</temps>
+            <mot niveau="1">chat</mot>
+        </partie>
+    <partie date="2020-20-16" trouvé="100">
+            <temps>10.0</temps>
+            <mot niveau="2">maison</mot>
+        </partie>
+    <partie date="2020-31-16" trouvé="60">
+            <temps>36.0</temps>
+            <mot niveau="3">jouet</mot>
+        </partie>
+    <partie date="2020-00-16" trouvé="100">
+            <temps>15.0</temps>
+            <mot niveau="2">fille</mot>
+        </partie>
+    <partie date="2020-32-16" trouvé="37">
+            <temps>2461.0</temps>
+            <mot niveau="4">monsieur</mot>
+        </partie>
+    <partie date="2020-38-17" trouvé="100">
+            <temps>13.0</temps>
+            <mot niveau="2">maison</mot>
+        </partie>
+    </parties>
+</profil>
