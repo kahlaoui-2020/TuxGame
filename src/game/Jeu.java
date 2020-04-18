@@ -91,7 +91,7 @@ public abstract class Jeu {
         env = new Env();
 
         // Instancie une Room
-        mainRoom = new Room("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/test/plateau.xml");
+        mainRoom = new Room("src/xmlFile/plateau.xml");
 
         // Instancie une autre Room pour les menus
         menuRoom = new Room();
@@ -379,7 +379,7 @@ public abstract class Jeu {
                 case Keyboard.KEY_1: 
                     // choisi un niveau et charge un mot depuis le dico
                     int niveau = getNiveau() ;
-                    this.dico = new Dico("src/test/dico.xml") ;
+                    this.dico = new Dico("src/xmlFile/dico.xml") ;
                     dico.lireDictionnaire();
                     String mot = this.dico.getMotDepuisListeNiveaux(niveau) ;
                     // Preciser le date

@@ -79,10 +79,6 @@ public class Partie {
         return date ;
     }
 
-    String getLettre() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     
     
 }

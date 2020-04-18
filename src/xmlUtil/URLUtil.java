@@ -1,4 +1,4 @@
-package xml;
+package xmlUtil;
 
 // see public class comment below
 import java.io.BufferedInputStream;

@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xml.XMLUtil;
+import xmlUtil.XMLUtil;
 
 public class Profil {
 
@@ -48,7 +48,7 @@ public class Profil {
     public Profil(String nomFichier) throws ParserConfigurationException, SAXException, IOException {
         this.parties = new ArrayList();
         
-        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+nomFichier+".xml") ;
+        _doc = fromXML("src/xmlFile/"+nomFichier+".xml") ;
     
         this.nom = _doc.getElementsByTagName("nom").item(0).getTextContent();
         this.dateNaissance = xmlDateToProfileDate(_doc.getElementsByTagName("anniversaire").item(0).getTextContent());
@@ -100,7 +100,7 @@ public class Profil {
     }
     public void ajouterPartieXML(Partie p) {
         
-        _doc = fromXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+this.nom+".xml");
+        _doc = fromXML("src/xmlFile/"+this.nom+".xml");
         
         Element partiesElt = (Element) _doc.getElementsByTagName("parties").item(0) ;
         
@@ -118,7 +118,7 @@ public class Profil {
         partieElt.appendChild(tempsElt);
         partieElt.appendChild(motElt);
         partiesElt.appendChild(partieElt);
-        toXML("/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/"+this.nom+".xml") ;
+        toXML("src/xmlFile/"+this.nom+".xml") ;
         
     }
     public int getDernierNiveau() {

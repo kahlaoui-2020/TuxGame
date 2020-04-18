@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xml.XMLUtil;
+import xmlUtil.XMLUtil;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -41,7 +41,7 @@ public class EditeurDico {
     }
     
     private Document _doc ;
-    private final String path= "/home/kahlaoui/Bureau/ghaieth/TuxLetterGame_template/src/xmlFile/" ;
+    private final String path= "src/xmlFile/" ;
     private Dico dico ;
     
     

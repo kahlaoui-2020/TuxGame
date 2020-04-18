@@ -8,9 +8,9 @@ and open the template in the editor.
 
 <plateau>
     <dimension>
-        <height>70</height>
-        <width>100</width>
-        <depth>110</depth>
+        <height>100</height>
+        <width>40</width>
+        <depth>50</depth>
     </dimension>
     <mapping>
         <textureBottom>textures/floor/grass2.png</textureBottom>
